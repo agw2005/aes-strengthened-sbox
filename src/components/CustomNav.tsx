@@ -21,7 +21,7 @@ const CustomNav = () => {
       </a>
       <a
         className="text-white h-12 fill-white hover:fill-red-400 hover:text-red-400 flex flex-col justify-center text-center"
-        href="https://link.springer.com/article/10.1007/s11071-024-10414-3"
+        href="https://github.com/agw2005/aes-strengthened-sbox"
         target="_blank"
       >
         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

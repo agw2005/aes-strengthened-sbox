@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { generateBigNumber } from "./aes.ts";
 import Header from "./components/Header.tsx";
+import { generateAesKey } from "./math/aes.ts";
 
 function App() {
   const [plainText, setPlainText] = useState("");
-  const [randomNumber, setRandomNumber] = useState(BigInt(0));
+  const [randomNumber, setRandomNumber] = useState<Uint8Array>();
 
   const handleGenerateNumber = () => {
-    const bit = 256;
-    setRandomNumber(generateBigNumber(bit));
+    setRandomNumber(generateAesKey());
   };
 
   return (
@@ -23,9 +22,7 @@ function App() {
         >
           Generate
         </button>
-        <p className="text-white">
-          {randomNumber <= 0 ? "Not generated" : randomNumber}
-        </p>
+        <p className="text-white">{randomNumber}</p>
       </section>
       <section className="h-64 p-4 gap-8 flex">
         <div className="flex-1 flex flex-col gap-2">
