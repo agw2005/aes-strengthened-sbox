@@ -1,31 +1,30 @@
 import { subByteBox } from "./aesConstants.ts";
+import { expandKey } from "./expansion.ts";
 import { mixSingleColumn } from "./helper.ts";
+import { getStateByte, setStateByte } from "./state.ts";
 
-const _encryptionRoutine = (inputState: Uint8Array, roundKey: Uint8Array) => {
-  initialRound(inputState, roundKey);
-  for (let i = 0; i < 9; i++) {
-    mainRound(inputState, roundKey);
+export const encryptAes = (
+  inputState: Uint8Array,
+  aesKey: Uint8Array,
+): Uint8Array => {
+  const expandedKey = expandKey(aesKey);
+
+  let resultState = addRoundKeys(inputState, expandedKey.slice(0, 16));
+
+  for (let round = 1; round <= 9; round++) {
+    const roundKey = expandedKey.slice(round * 16, round * 16 + 16);
+    resultState = substituteBytes(resultState);
+    resultState = shiftRows(resultState);
+    resultState = mixColumns(resultState);
+    resultState = addRoundKeys(resultState, roundKey);
   }
-  finalRound(inputState, roundKey);
-};
 
-const initialRound = (inputState: Uint8Array, roundKey: Uint8Array) => {
-  addRoundKeys(inputState, roundKey);
-};
-
-const mainRound = (inputState: Uint8Array, roundKey: Uint8Array) => {
-  let resultState = inputState;
-  resultState = substituteBytes(inputState);
+  const finalRoundKey = expandedKey.slice(160, 176);
+  resultState = substituteBytes(resultState);
   resultState = shiftRows(resultState);
-  resultState = mixColumns(resultState);
-  addRoundKeys(inputState, roundKey);
-};
+  resultState = addRoundKeys(resultState, finalRoundKey);
 
-const finalRound = (inputState: Uint8Array, roundKey: Uint8Array) => {
-  let resultState = inputState;
-  resultState = substituteBytes(inputState);
-  resultState = shiftRows(resultState);
-  addRoundKeys(inputState, roundKey);
+  return resultState;
 };
 
 const substituteBytes = (inputState: Uint8Array): Uint8Array => {
@@ -44,10 +43,9 @@ const shiftRows = (inputState: Uint8Array): Uint8Array => {
   const shiftedRowsState = new Uint8Array(matrixElementCount);
   for (let rowIndex = 0; rowIndex < matrixRowCount; rowIndex++) {
     for (let columnIndex = 0; columnIndex < matrixColumnCount; columnIndex++) {
-      shiftedRowsState[rowIndex + matrixColumnCount * columnIndex] = inputState[
-        rowIndex +
-        matrixRowCount * ((columnIndex + rowIndex) % matrixColumnCount)
-      ];
+      const shiftedCol = (columnIndex + rowIndex) % 4;
+      const value = getStateByte(inputState, rowIndex, shiftedCol);
+      setStateByte(shiftedRowsState, rowIndex, columnIndex, value);
     }
   }
   return shiftedRowsState;
