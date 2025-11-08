@@ -1,30 +1,31 @@
 import { subByteBox } from "./aesConstants.ts";
+import { mixSingleColumn } from "./helper.ts";
 
-const _encryptionRoutine = (inputState: Uint8Array) => {
-  initialRound();
+const _encryptionRoutine = (inputState: Uint8Array, roundKey: Uint8Array) => {
+  initialRound(inputState, roundKey);
   for (let i = 0; i < 9; i++) {
-    mainRound(inputState);
+    mainRound(inputState, roundKey);
   }
-  finalRound(inputState);
+  finalRound(inputState, roundKey);
 };
 
-const initialRound = () => {
-  addRoundKeys();
+const initialRound = (inputState: Uint8Array, roundKey: Uint8Array) => {
+  addRoundKeys(inputState, roundKey);
 };
 
-const mainRound = (inputState: Uint8Array) => {
+const mainRound = (inputState: Uint8Array, roundKey: Uint8Array) => {
   let resultState = inputState;
   resultState = substituteBytes(inputState);
   resultState = shiftRows(resultState);
-  mixColumns();
-  addRoundKeys();
+  resultState = mixColumns(resultState);
+  addRoundKeys(inputState, roundKey);
 };
 
-const finalRound = (inputState: Uint8Array) => {
+const finalRound = (inputState: Uint8Array, roundKey: Uint8Array) => {
   let resultState = inputState;
   resultState = substituteBytes(inputState);
   resultState = shiftRows(resultState);
-  addRoundKeys();
+  addRoundKeys(inputState, roundKey);
 };
 
 const substituteBytes = (inputState: Uint8Array): Uint8Array => {
@@ -36,7 +37,7 @@ const substituteBytes = (inputState: Uint8Array): Uint8Array => {
   return substitutedBytesState;
 };
 
-const shiftRows = (inputState: Uint8Array) => {
+const shiftRows = (inputState: Uint8Array): Uint8Array => {
   const matrixRowCount = 4;
   const matrixColumnCount = 4;
   const matrixElementCount = matrixRowCount * matrixColumnCount;
@@ -52,10 +53,29 @@ const shiftRows = (inputState: Uint8Array) => {
   return shiftedRowsState;
 };
 
-const mixColumns = () => {
-  return 0;
+const mixColumns = (inputState: Uint8Array): Uint8Array => {
+  const matrixRowCount = 4;
+  const matrixColumnCount = 4;
+  const matrixElementCount = matrixRowCount * matrixColumnCount;
+  const mixedColumnsState = new Uint8Array(matrixElementCount);
+  for (let columnIndex = 0; columnIndex < matrixColumnCount; columnIndex++) {
+    const column = inputState.slice(
+      columnIndex * matrixColumnCount,
+      columnIndex * matrixColumnCount + matrixColumnCount,
+    );
+    const mixedColumn = mixSingleColumn(column);
+    mixedColumnsState.set(mixedColumn, columnIndex * matrixColumnCount);
+  }
+  return mixedColumnsState;
 };
 
-const addRoundKeys = () => {
-  return 0;
+const addRoundKeys = (
+  inputState: Uint8Array,
+  roundKey: Uint8Array,
+): Uint8Array => {
+  const XORedState = new Uint8Array(inputState.length);
+  for (let i = 0; i < inputState.length; i++) {
+    XORedState[i] = inputState[i] ^ roundKey[i];
+  }
+  return XORedState;
 };

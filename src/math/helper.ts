@@ -1,0 +1,30 @@
+/**
+ * A helper function that multiplies an input byte by the polynomial {02} in GF(2^8).
+ * It implements the finite field multiplication required for AES’s `MixColumns` function.
+ *
+ * @param byte The element of an AES state
+ * @returns The element multiplied by 2 in GF(2^8)
+ */
+const xtime = (byte: number): number => {
+  return ((byte << 1) ^ (byte & 0x80 ? 0x1b : 0)) & 0xff;
+};
+
+/**
+ * A helper function that applies `MixColumns` transformation to a single 4-byte column of the AES state.
+ * It performs XOR operations according to the fixed matrix multiplication in GF(2^8) defined by the AES standard.
+ *
+ * @param column The column of an AES state
+ * @returns Transformed column
+ */
+export const mixSingleColumn = (column: Uint8Array): Uint8Array => {
+  const temp = new Uint8Array(4);
+  temp[0] = xtime(column[0]) ^ xtime(column[1]) ^ column[1] ^ column[2] ^
+    column[3];
+  temp[1] = column[0] ^ xtime(column[1]) ^ xtime(column[2]) ^ column[2] ^
+    column[3];
+  temp[2] = column[0] ^ column[1] ^ xtime(column[2]) ^ xtime(column[3]) ^
+    column[3];
+  temp[3] = xtime(column[0]) ^ column[0] ^ column[1] ^ column[2] ^
+    xtime(column[3]);
+  return temp;
+};
