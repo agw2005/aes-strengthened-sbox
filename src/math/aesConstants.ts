@@ -1,9 +1,8 @@
-export const AES_KEY_SIZE = 16;
-export const IV_SIZE = 16;
-export const BIT_SIZE = 128;
-export const EXPANDED_KEY_SIZE = 11 * AES_KEY_SIZE;
+export const AES_KEY_SIZE_BYTES = 16;
+export const BLOCK_SIZE_BYTES = 16;
+export const BLOCK_DIMENSION = 4;
 
-export const subByteBox = [
+export const S_BOX = [
   //16x16
   0x63,
   0x7c,
@@ -263,7 +262,7 @@ export const subByteBox = [
   0x16,
 ];
 
-export const inverseSubByteBox = [
+export const INVERSE_S_BOX = [
   // 16x16
   0x52,
   0x09,
@@ -523,7 +522,7 @@ export const inverseSubByteBox = [
   0x7d,
 ];
 
-export const roundConstants = [
+export const ROUND_CONSTANTS = [
   // 8x4
   0x00,
   0x01,
