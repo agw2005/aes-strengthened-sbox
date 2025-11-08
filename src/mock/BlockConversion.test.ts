@@ -25,9 +25,19 @@ for (let i = 0; i < encryptedAESBlock.length; i++) {
 const decryptedString: string = aesBlocksToString(decryptedAESBlock);
 
 test("Convert Plaintext AES blocks to string", () => {
+  console.log(`Plain text : ${plainTextString}`);
+  console.log(
+    `Reconverted converted plain text : ${
+      aesBlocksToString(
+        plainTextAESBlocks,
+      )
+    }\n`,
+  );
   expect(aesBlocksToString(plainTextAESBlocks)).toBe(plainTextString);
 });
 
 test("Convert decrypted AES blocks to string", () => {
+  console.log(`Plain text : ${plainTextString}`);
+  console.log(`Reconverted converted decrypted text : ${decryptedString}\n`);
   expect(decryptedString).toBe(plainTextString);
 });
