@@ -9,19 +9,21 @@ export const decryptAes = (
 ): Uint8Array => {
   const expandedKey = expandKey(aesKey);
 
-  let resultState = addRoundKeys(inputState, expandedKey.slice(0, 16));
+  let resultState = addRoundKeys(inputState, expandedKey.slice(160, 176));
 
-  for (let round = 1; round <= 9; round++) {
-    const roundKey = expandedKey.slice(round * 16, round * 16 + 16);
-    resultState = inverseSubstituteBytes(resultState);
+  for (let round = 9; round >= 1; round--) {
     resultState = inverseShiftRows(resultState);
+    resultState = inverseSubstituteBytes(resultState);
+    resultState = addRoundKeys(
+      resultState,
+      expandedKey.slice(round * 16, round * 16 + 16),
+    );
     resultState = inverseMixColumns(resultState);
-    resultState = addRoundKeys(resultState, roundKey);
   }
 
-  const finalRoundKey = expandedKey.slice(160, 176);
-  resultState = inverseSubstituteBytes(resultState);
+  const finalRoundKey = expandedKey.slice(0, 16);
   resultState = inverseShiftRows(resultState);
+  resultState = inverseSubstituteBytes(resultState);
   resultState = addRoundKeys(resultState, finalRoundKey);
 
   return resultState;
