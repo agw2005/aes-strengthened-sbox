@@ -1,8 +1,8 @@
+import { decryptAes } from "../math/decryption.ts";
 import { encryptAes } from "../math/encryption.ts";
 import { generateAesKey } from "../math/keygen.ts";
 import { stringToAESBlocks } from "../math/state.ts";
 
-// EXAMPLE
 const AESKey: Uint8Array = generateAesKey();
 console.log(`AES Key : ${AESKey}\n`);
 
@@ -20,3 +20,10 @@ for (let i = 0; i < AESBlocks.length; i++) {
 // Mutating elements inside an array or object doesn't count as reassigning the variable itself
 
 console.log(`AES Blocks Encrypted : ${encryptedAESBlock}\n`);
+
+const decryptedAESBlock: Uint8Array[] = encryptedAESBlock;
+for (let i = 0; i < encryptedAESBlock.length; i++) {
+  decryptedAESBlock[i] = decryptAes(encryptedAESBlock[i], AESKey);
+}
+
+console.log(`AES Blocks Decrypted : ${decryptedAESBlock}\n`);

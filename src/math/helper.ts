@@ -28,3 +28,49 @@ export const mixSingleColumn = (column: Uint8Array): Uint8Array => {
     xtime(column[3]);
   return temp;
 };
+
+/**
+ * A helper function that applies GF(2^8) similar to `xtime()`.
+ *
+ * @param x Description to be added soon
+ * @param y Description to be added soon
+ * @returns Description to be added soon
+ */
+const multiply = (x: number, y: number): number => {
+  let result = 0;
+  let a = x;
+  let b = y;
+  while (b > 0) {
+    if (b & 1) result ^= a;
+    a = xtime(a);
+    b >>= 1;
+  }
+  return result & 0xff;
+};
+
+/**
+ * A helper function that applies `inverseMixColumns` transformation to a single 4-byte column of the AES state.
+ *
+ * @param column The column of an AES state
+ * @returns Transformed column
+ */
+export const inverseMixSingleColumn = (column: Uint8Array): Uint8Array => {
+  const temp = new Uint8Array(4);
+  temp[0] = multiply(column[0], 0x0e) ^
+    multiply(column[1], 0x0b) ^
+    multiply(column[2], 0x0d) ^
+    multiply(column[3], 0x09);
+  temp[1] = multiply(column[0], 0x09) ^
+    multiply(column[1], 0x0e) ^
+    multiply(column[2], 0x0b) ^
+    multiply(column[3], 0x0d);
+  temp[2] = multiply(column[0], 0x0d) ^
+    multiply(column[1], 0x09) ^
+    multiply(column[2], 0x0e) ^
+    multiply(column[3], 0x0b);
+  temp[3] = multiply(column[0], 0x0b) ^
+    multiply(column[1], 0x0d) ^
+    multiply(column[2], 0x09) ^
+    multiply(column[3], 0x0e);
+  return temp;
+};
