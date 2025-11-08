@@ -14,6 +14,24 @@ export const stringToAESBlocks = (plaintext: string): Uint8Array[] => {
   return blocks;
 };
 
+export const aesBlocksToString = (blocks: Uint8Array[]): string => {
+  const totalLength = blocks.length * 16;
+  const combined = new Uint8Array(totalLength);
+
+  for (let i = 0; i < blocks.length; i++) {
+    combined.set(blocks[i], i * 16);
+  }
+
+  let lastNonZeroIndex = combined.length - 1;
+  while (lastNonZeroIndex >= 0 && combined[lastNonZeroIndex] === 0) {
+    lastNonZeroIndex--;
+  }
+  const trimmed = combined.slice(0, lastNonZeroIndex + 1);
+
+  const decoder = new TextDecoder();
+  return decoder.decode(trimmed);
+};
+
 export const getStateByte = (
   state: Uint8Array,
   row: number,
