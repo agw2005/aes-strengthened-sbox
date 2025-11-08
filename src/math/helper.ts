@@ -74,3 +74,37 @@ export const inverseMixSingleColumn = (column: Uint8Array): Uint8Array => {
     multiply(column[3], 0x0e);
   return temp;
 };
+
+/**
+ * A helper function that checks if 2 arrays are deeply equal.
+ *
+ * @param a Array A
+ * @param b Array B
+ * @returns Equality evaluation
+ */
+const arrayEquality = (a: Uint8Array, b: Uint8Array): boolean => {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+};
+
+/**
+ * A helper function that checks if 2 AES blocks are equal.
+ *
+ * @param AESBlockA Uint8Array[] A
+ * @param AESBlockB Uint8Array[] B
+ * @returns Equality evaluation
+ */
+export const aesBlockEquality = (
+  AESBlockA: Uint8Array[],
+  AESBlockB: Uint8Array[],
+): boolean => {
+  if (AESBlockA.length !== AESBlockB.length) return false;
+  for (let i = 0; i < AESBlockA.length; i++) {
+    console.log(`A-blocks : ${AESBlockA[i]}\nB-blocks : ${AESBlockB[i]}\n`);
+    if (!arrayEquality(AESBlockA[i], AESBlockB[i])) return false;
+  }
+  return true;
+};

@@ -3,6 +3,7 @@ import { decryptAes } from "../math/decryption.ts";
 import { encryptAes } from "../math/encryption.ts";
 import { generateAesKey } from "../math/keygen.ts";
 import { stringToAESBlocks } from "../math/state.ts";
+import { aesBlockEquality } from "../math/helper.ts";
 
 const AESKey: Uint8Array = generateAesKey();
 
@@ -22,14 +23,10 @@ for (let i = 0; i < encryptedAESBlock.length; i++) {
   decryptedAESBlock[i] = decryptAes(encryptedAESBlock[i], AESKey);
 }
 
-// console.log(`AES Key : ${AESKey}\n`);
-// console.log(`Text : ${PlainText}\n`);
-// console.log(`AES Blocks : ${AESBlocks}\n`);
-// console.log(`AES Blocks Encrypted : ${encryptedAESBlock}\n`);
-// console.log(`AES Blocks Decrypted : ${decryptedAESBlock}\n`);
-// console.log(decryptedAESBlock === AESBlocks);
-// console.log("\n");
-
-test("block-level decryption and encryption", () => {
+test("vitest built-in Uint8Array[] equality", () => {
   expect(decryptedAESBlock).toStrictEqual(AESBlocks);
+});
+
+test("custom Uint8Array[] equality", () => {
+  expect(aesBlockEquality(AESBlocks, decryptedAESBlock)).toBe(true);
 });
