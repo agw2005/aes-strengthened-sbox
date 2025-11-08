@@ -1,3 +1,8 @@
+export const AES_KEY_SIZE = 16;
+export const IV_SIZE = 16;
+export const BIT_SIZE = 128;
+export const EXPANDED_KEY_SIZE = 11 * AES_KEY_SIZE;
+
 export const subByteBox = [
   //16x16
   0x63,

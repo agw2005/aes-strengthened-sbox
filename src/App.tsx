@@ -1,28 +1,66 @@
 import { useState } from "react";
 import Header from "./components/Header.tsx";
-import { generateAesKey } from "./math/aes.ts";
+import { expandKey } from "./math/expansion.ts";
+import { generateAesKey } from "./math/keygen.ts";
 
 function App() {
   const [plainText, setPlainText] = useState("");
-  const [randomNumber, setRandomNumber] = useState<Uint8Array>();
+  const [aesKey, setAesKey] = useState<Uint8Array>();
+  const [expandedAesKey, setExpandedAesKey] = useState<Uint8Array>();
 
-  const handleGenerateNumber = () => {
-    setRandomNumber(generateAesKey());
+  const handleGenerateAesKey = () => {
+    setAesKey(generateAesKey());
+  };
+
+  const handleExpandAesKey = () => {
+    aesKey ? setExpandedAesKey(expandKey(aesKey)) : 0;
   };
 
   return (
-    <main className="bg-black p-8 h-screen flex flex-col gap-8">
+    <main className="bg-black h-max min-h-screen p-8 flex flex-col gap-8">
       <Header>Strengthened AES via S-Box Modification</Header>
 
       <section className="flex flex-col gap-4 items-center">
         <button
-          onClick={handleGenerateNumber}
+          onClick={handleGenerateAesKey}
           type="button"
           className="bg-white hover:bg-gray-500 hover:text-white p-4"
         >
           Generate
         </button>
-        <p className="text-white">{randomNumber}</p>
+        <p className="text-white">{`AES Key : ${aesKey ? "" : "N/A"}`}</p>
+        {aesKey
+          ? (
+            <div className="border-2 border-white w-1/2 p-2">
+              <p className="text-white break-all text-center">{aesKey}</p>
+            </div>
+          )
+          : (
+            ""
+          )}
+      </section>
+      <section className="flex flex-col gap-4 items-center">
+        <button
+          onClick={handleExpandAesKey}
+          type="button"
+          className="bg-white hover:bg-gray-500 hover:text-white p-4"
+        >
+          Expand
+        </button>
+        <p className="text-white">
+          {`Expanded AES Key : ${expandedAesKey ? "" : "N/A"}`}
+        </p>
+        {expandedAesKey
+          ? (
+            <div className="border-2 border-white w-1/2 p-2">
+              <p className="text-white break-all text-center">
+                {expandedAesKey}
+              </p>
+            </div>
+          )
+          : (
+            ""
+          )}
       </section>
       <section className="h-64 p-4 gap-8 flex">
         <div className="flex-1 flex flex-col gap-2">
