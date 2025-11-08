@@ -1,19 +1,13 @@
 import { useState } from "react";
 import Header from "./components/Header.tsx";
-import { expandKey } from "./math/expansion.ts";
-import { generateAesKey } from "./math/keygen.ts";
+import { generateAes128Key } from "./math/aes128.ts";
 
 function App() {
   const [plainText, setPlainText] = useState("");
   const [aesKey, setAesKey] = useState<Uint8Array>();
-  const [expandedAesKey, setExpandedAesKey] = useState<Uint8Array>();
 
   const handleGenerateAesKey = () => {
-    setAesKey(generateAesKey());
-  };
-
-  const handleExpandAesKey = () => {
-    aesKey ? setExpandedAesKey(expandKey(aesKey)) : 0;
+    setAesKey(generateAes128Key());
   };
 
   return (
@@ -33,29 +27,6 @@ function App() {
           ? (
             <div className="border-2 border-white w-1/2 p-2">
               <p className="text-white break-all text-center">{aesKey}</p>
-            </div>
-          )
-          : (
-            ""
-          )}
-      </section>
-      <section className="flex flex-col gap-4 items-center">
-        <button
-          onClick={handleExpandAesKey}
-          type="button"
-          className="bg-white hover:bg-gray-500 hover:text-white p-4"
-        >
-          Expand
-        </button>
-        <p className="text-white">
-          {`Expanded AES Key : ${expandedAesKey ? "" : "N/A"}`}
-        </p>
-        {expandedAesKey
-          ? (
-            <div className="border-2 border-white w-1/2 p-2">
-              <p className="text-white break-all text-center">
-                {expandedAesKey}
-              </p>
             </div>
           )
           : (
