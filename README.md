@@ -1,85 +1,39 @@
-# React + TypeScript + Vite
+# Commit Guidelines
+This project uses the form of type `[PURPOSE]([SCOPE]):[MESSAGE]`
 
-This template provides a minimal setup to get React working in Vite with HMR and
-some ESLint rules.
+`[PURPOSE]` refers to the purpose of the commit, the content is according to the table below.
+| PURPOSE-value | Description |
+|----------|----------|
+| feat   | When changes adds a new feature or functionality   |
+| fix   | When changes fixes a bug in the codebase   |
+| chore   | When changes doesn't affect code logic, such as updating dependencies, CI/CD configurations, or scripts   |
+| refactor   | When changes improve the code without changing functionality   |
+| docs   | When the changes updates the documentation   |
 
-Currently, two official plugins are available:
+`[SCOPE]` indicates the name of the file(s) that is changed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react)
-  uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in
-  [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc)
-  uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is enabled on this template. See
-[this documentation](https://react.dev/learn/react-compiler) for more
-information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the
-configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+`[MESSAGE]` is a short summary plus occasionally a long explanation or reference to other relative issues
+```bash
+# Good commit message following conventional guidelines
+git commit -m "feat(auth.js): add JWT-based authentication"
+git commit -m "fix(login.jsx): resolve race condition in login flow"
 ```
 
-You can also install
-[eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x)
-and
-[eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom)
-for React-specific lint rules:
+## 2. Atomic & Focused
+Do not mix several independent changes in one commit.
+```bash
+# Good commit
+git commit -m "Add user authentication"
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+# Bad commit
+git commit -m "Add user authentication AND update UI styles"
+```
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+## 3. Descriptive Message
+What the commit does and why the change was made.
+```bash
+# Good commit message
+git commit -m "Fix Correct null pointer exception in user login"
+# Bad commit message
+git commit -m "Fix bug"
 ```
