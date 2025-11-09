@@ -11,9 +11,14 @@ function App() {
   const [aesKey, setAesKey] = useState<Uint8Array>();
   const [plainText, setPlainText] = useState<string>("");
   const [encryptedPlainText, setEncryptedPlainText] = useState<string>("");
+  const [keyNotGeneratedYetError, setKeyNotGeneratedYetError] = useState<
+    string
+  >("");
 
   const handleGenerateAesKey = () => {
-    setAesKey(generateAes128Key());
+    const generatedKey = generateAes128Key();
+    setAesKey(generatedKey);
+    setKeyNotGeneratedYetError("");
   };
 
   const handleEncryptPlainText = () => {
@@ -22,9 +27,12 @@ function App() {
         throw new Error(`Key has not been generated yet`);
       }
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setKeyNotGeneratedYetError(errorMessage);
       console.error(err);
       return;
     }
+    setKeyNotGeneratedYetError("");
     const plainTextBlock = stringToBlocks(plainText);
     const encryptedTextBlock = encryptBlock(plainTextBlock, aesKey);
     const encryptedTextString = blocksToString(encryptedTextBlock);
@@ -32,29 +40,44 @@ function App() {
   };
 
   return (
-    <main className="bg-black h-max min-h-screen p-8 flex flex-col gap-8">
+    <main className="bg-black min-h-screen p-8 flex flex-col gap-8">
       <Header>Strengthened AES via S-Box Modification</Header>
 
       <section className="flex flex-col gap-4 items-center">
         <button
           onClick={handleGenerateAesKey}
           type="button"
-          className="h-max self-center rounded-2xl bg-white hover:bg-gray-500 hover:text-white active:bg-amber-300 active:text-black p-4"
+          className="h-max self-center rounded-2xl p-2 md:p-4 bg-white hover:bg-gray-500 hover:text-white active:bg-amber-300 active:text-black"
         >
-          Generate
+          Generate key
         </button>
-        <p className="text-white">{`AES Key : ${aesKey ? "" : "N/A"}`}</p>
-        {aesKey
-          ? (
-            <div className="border-2 border-white rounded-2xl min-w-max max-w-1/2 p-2">
-              <p className="text-white break-all text-center">{aesKey}</p>
-            </div>
-          )
-          : (
-            ""
-          )}
+        <p className="text-white font-bold">{`AES-128 Key : `}</p>
+        <div
+          className={`border-2 border-white ${
+            aesKey ? "bg-black" : "bg-yellow-800"
+          } rounded-2xl max-w-7/8 p-2`}
+        >
+          <p
+            className={`text-white break-all text-center ${
+              aesKey ? "" : "font-bold"
+            }`}
+          >
+            {aesKey ? aesKey : "AES-key not generated yet"}
+          </p>
+        </div>
       </section>
-      <section className="h-64 p-4 gap-8 flex">
+      {keyNotGeneratedYetError
+        ? (
+          <section className="self-center">
+            <div className="border-2 border-white w-max p-2 bg-red-800">
+              <p className="text-white text-xs">{keyNotGeneratedYetError}</p>
+            </div>
+          </section>
+        )
+        : (
+          ""
+        )}
+      <section className="min-h-32 p-4 gap-8 flex md:flex-row flex-col ">
         <div className="flex-1 flex flex-col gap-2">
           <div className="flex-1">
             <h2 className="text-white text-center font-bold text-xl">
@@ -73,7 +96,7 @@ function App() {
         <button
           type="button"
           onClick={handleEncryptPlainText}
-          className="h-max self-center rounded-2xl bg-white hover:bg-gray-500 hover:text-white active:bg-amber-300 active:text-black p-4"
+          className="h-max self-center rounded-2xl p-2 bg-white hover:bg-gray-500 hover:text-white active:bg-amber-300 active:text-black"
         >
           Encrypt
         </button>
