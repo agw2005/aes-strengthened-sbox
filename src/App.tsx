@@ -106,6 +106,29 @@ function App() {
       setEncryptedPlainTextInput("");
       setEncryptedPlainTextInput(encryptedPlainTextBase64);
     },
+    handlePasteAESKeyFromClipboard: async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+
+        // ChatGPT: Remove spaces, colons, etc.
+        const cleanText = text.replace(/[^0-9a-fA-F]/g, "");
+
+        if (cleanText.length !== AES_KEY_SIZE_BYTES * 2) {
+          alert(
+            "Invalid AES key length in clipboard. Must be 32 hex characters.",
+          );
+          return;
+        }
+
+        const bytes = [];
+        for (let i = 0; i < AES_KEY_SIZE_BYTES; i++) {
+          bytes.push(cleanText.slice(i * 2, i * 2 + 2));
+        }
+        setAesKeyHexInputBytes(bytes);
+      } catch (err) {
+        console.error("Clipboard paste failed:", err);
+      }
+    },
   };
 
   return (
@@ -209,6 +232,13 @@ function App() {
           className="h-max self-center rounded-2xl p-2 bg-gray-500 text-white hover:bg-gray-400 active:bg-amber-300 active:text-black"
         >
           Paste from generated key
+        </button>
+        <button
+          type="button"
+          onClick={helper.handlePasteAESKeyFromClipboard}
+          className="h-max self-center rounded-2xl p-2 bg-gray-500 text-white hover:bg-gray-400 active:bg-amber-300 active:text-black"
+        >
+          Paste from clipboard
         </button>
       </section>
       <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col ">
