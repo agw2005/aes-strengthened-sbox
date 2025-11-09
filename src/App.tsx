@@ -14,7 +14,8 @@ import {
   keyToHexadecimal,
 } from "./helper/hex.ts";
 import { AES_KEY_SIZE_BYTES } from "./math/aesConstants.ts";
-import { customLogger } from "./helper/log.ts";
+import { flattenBlocks, splitIntoBlocks } from "./math/aesHelper.ts";
+import { base64ToUint8Array, uint8ArrayToBase64 } from "./helper/base64.ts";
 
 function App() {
   const [aesKey, setAesKey] = useState<Uint8Array>();
@@ -24,11 +25,13 @@ function App() {
     Array(16).fill(""),
   );
 
-  const [encryptedPlainText, setEncryptedPlainText] = useState<string>("");
+  const [encryptedPlainTextBase64, setEncryptedPlainText] = useState<string>(
+    "",
+  );
   const [encryptedPlainTextInput, setEncryptedPlainTextInput] = useState<
     string
   >("");
-  const [decryptedText, setDecryptedText] = useState<string>("");
+  const [decryptedTextBase64, setDecryptedText] = useState<string>("");
   const [keyNotGeneratedYetError, setKeyNotGeneratedYetError] = useState<
     string
   >("");
@@ -36,9 +39,7 @@ function App() {
   const aes = {
     handleGenerateAesKey: () => {
       const generatedKey = generateAes128Key();
-      customLogger(`Generated key : ${generatedKey}`);
       const hexadecimalKey = keyToHexadecimal(generatedKey);
-      customLogger(`Hexadecimal key : ${hexadecimalKey}`);
       setAesKey(generatedKey);
       setAesKeyHex(hexadecimalKey);
       setKeyNotGeneratedYetError("");
@@ -56,19 +57,10 @@ function App() {
       }
       setKeyNotGeneratedYetError("");
       const plainTextBlock = stringToBlocks(plainText);
-      customLogger(`Plain text block : ${plainTextBlock}`);
       const encryptedTextBlocks = encryptBlock(plainTextBlock, aesKey);
-      customLogger(`Encrypted text block : ${encryptedTextBlocks}`);
-      const encryptedTextString = blocksToString(encryptedTextBlocks);
-      customLogger(`Encrypted text string : ${encryptedTextString}`);
-      setEncryptedPlainText(encryptedTextString);
-      customLogger(
-        `Encrypted text block (reconverted) : ${
-          blocksToString(
-            encryptedTextBlocks,
-          )
-        }`,
-      );
+      const encryptedTextBlock = flattenBlocks(encryptedTextBlocks);
+      const encryptedBase64 = uint8ArrayToBase64(encryptedTextBlock);
+      setEncryptedPlainText(encryptedBase64);
     },
     handleDecryptEncryptedText: () => {
       try {
@@ -83,19 +75,15 @@ function App() {
       }
       setKeyNotGeneratedYetError("");
       const hexAesKey = hexBytesToStringHexBytes(aesKeyHexInputBytes);
-      customLogger(`AES key hex string : ${hexAesKey}`);
       const validAesKey = hexadecimalToKey(hexAesKey);
-      customLogger(`AES key Uint8Array : ${validAesKey}`);
-      const encryptedTextBlocks = stringToBlocks(encryptedPlainText);
-      customLogger(`Encrypted text block : ${encryptedTextBlocks}`);
+      const encryptedTextBlock = base64ToUint8Array(encryptedPlainTextInput);
+      const encryptedTextBlocks = splitIntoBlocks(encryptedTextBlock);
       const decryptedTextBlocks = decryptBlock(
         encryptedTextBlocks,
         validAesKey,
       );
-      customLogger(`Decrypted text block : ${decryptedTextBlocks}`);
-      const decryptedTextString = blocksToString(decryptedTextBlocks);
-      customLogger(`Decrypted text string : ${decryptedTextString}`);
-      setDecryptedText(decryptedTextString);
+      const decryptedTextStringBase64 = blocksToString(decryptedTextBlocks);
+      setDecryptedText(decryptedTextStringBase64);
     },
   };
 
@@ -116,7 +104,7 @@ function App() {
     },
     handlePasteFromEncryptedText: () => {
       setEncryptedPlainTextInput("");
-      setEncryptedPlainTextInput(encryptedPlainText);
+      setEncryptedPlainTextInput(encryptedPlainTextBase64);
     },
   };
 
@@ -158,7 +146,7 @@ function App() {
         : (
           ""
         )}
-      <section className="min-h-32 p-4 gap-8 flex md:flex-row flex-col ">
+      <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col ">
         <div className="flex-1 flex flex-col gap-2">
           <div className="flex-1">
             <h2 className="text-white text-center font-bold text-xl">
@@ -190,7 +178,7 @@ function App() {
           <form action="" className="flex-99">
             <textarea
               disabled
-              value={encryptedPlainText}
+              value={encryptedPlainTextBase64}
               className="text-white border-white overflow-y-scroll p-2 text-sm resize-none border-5 rounded-2xl w-full h-full"
             >
             </textarea>
@@ -223,7 +211,7 @@ function App() {
           Paste from generated key
         </button>
       </section>
-      <section className="min-h-32 p-4 gap-8 flex md:flex-row flex-col ">
+      <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col ">
         <div className="flex-1 flex flex-col gap-2">
           <div className="flex-1">
             <h2 className="text-white text-center font-bold text-xl">
@@ -263,7 +251,7 @@ function App() {
           <form action="" className="flex-99">
             <textarea
               disabled
-              value={decryptedText}
+              value={decryptedTextBase64}
               className="text-white border-white overflow-y-scroll p-2 text-sm resize-none border-5 rounded-2xl w-full h-full"
             >
             </textarea>
