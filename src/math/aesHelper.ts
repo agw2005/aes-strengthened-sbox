@@ -479,3 +479,31 @@ export const aesBlockEquality = (
   }
   return true;
 };
+
+export const flattenBlocks = (blocks: Uint8Array[]): Uint8Array => {
+  const totalLength = blocks.length * BLOCK_SIZE_BYTES;
+  const combined = new Uint8Array(totalLength);
+  for (let i = 0; i < blocks.length; i++) {
+    combined.set(blocks[i], i * BLOCK_SIZE_BYTES);
+  }
+  return combined;
+};
+
+export const splitIntoBlocks = (bytes: Uint8Array): Uint8Array[] => {
+  const blocks: Uint8Array[] = [];
+  const numberOfBlocks = Math.ceil(bytes.length / BLOCK_SIZE_BYTES);
+  for (let i = 0; i < numberOfBlocks; i++) {
+    const block = bytes.slice(
+      i * BLOCK_SIZE_BYTES,
+      i * BLOCK_SIZE_BYTES + BLOCK_SIZE_BYTES,
+    );
+    if (block.length < BLOCK_SIZE_BYTES) {
+      const paddedBlock = new Uint8Array(BLOCK_SIZE_BYTES);
+      paddedBlock.set(block);
+      blocks.push(paddedBlock);
+    } else {
+      blocks.push(block);
+    }
+  }
+  return blocks;
+};
