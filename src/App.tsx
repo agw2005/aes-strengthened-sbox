@@ -144,7 +144,7 @@ function App() {
       <Header>Strengthened AES via S-Box Modification</Header>
       <section className="md:w-1/2 self-center flex flex-col gap-4 m-0">
         <hr className="text-pastel-pink mb-2" />
-        <p className="text-pastel-green text-center text-sm font-bold filter drop-shadow">
+        <p className="text-pastel-green text-center text-sm md:text-base lg:text-xl font-bold filter drop-shadow">
           This web app is an implementation of the research article,{" "}
           <strong>
             AES S-box modification uses affine matrices exploration for
