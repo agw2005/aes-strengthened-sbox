@@ -14,7 +14,7 @@ import {
   keyToHexadecimal,
 } from "./helper/hex.ts";
 import { AES_KEY_SIZE_BYTES } from "./math/aesConstants.ts";
-import { SBOX_TYPE } from "./math/aesHelper.ts";
+import { SBOX_TYPE, type SBoxType } from "./math/aesHelper.ts";
 
 function App() {
   const [generatedAESKey, setGeneratedAESKey] = useState<Uint8Array>();
@@ -31,6 +31,10 @@ function App() {
   const [keyNotGeneratedYetError, setKeyNotGeneratedYetError] = useState<
     string
   >("");
+
+  const [inputSelectedSBoxType, setInputSelectedSBoxType] = useState<SBoxType>(
+    SBOX_TYPE.Original,
+  );
 
   const aes = {
     handleGenerateAesKey: () => {
@@ -57,7 +61,7 @@ function App() {
       const encryptedTextBlocks = encryptBlock(
         plainTextBlocks,
         generatedAESKey,
-        SBOX_TYPE.Original,
+        inputSelectedSBoxType,
       );
       const encryptedTextString = blocksToString(encryptedTextBlocks);
       setOutputEncryptedText(encryptedTextString);
@@ -84,7 +88,7 @@ function App() {
       const decryptedTextBlocks = decryptBlock(
         encryptedTextBlocks,
         inputAESKey,
-        SBOX_TYPE.Original,
+        inputSelectedSBoxType,
       );
       const decryptedTextString = blocksToString(decryptedTextBlocks);
       setOutputDecryptedText(decryptedTextString);
@@ -175,6 +179,29 @@ function App() {
         : (
           ""
         )}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-white text-center font-bold text-xl">
+          S-Box Type :
+        </h2>
+        <div className="flex justify-center gap-4 flex-wrap">
+          {Object.values(SBOX_TYPE).map((SboxTypes) => {
+            return (
+              <button
+                key={SboxTypes}
+                onClick={() => setInputSelectedSBoxType(SboxTypes)}
+                type="button"
+                className={`h-max self-center rounded-2xl p-2 md:p-4 ${
+                  SboxTypes === inputSelectedSBoxType
+                    ? "bg-yellow-300 hover:bg-yellow-500 hover:text-white active:bg-amber-700 active:text-black"
+                    : "bg-white hover:bg-gray-500 hover:text-white active:bg-amber-700 active:text-black"
+                }`}
+              >
+                {SboxTypes}
+              </button>
+            );
+          })}
+        </div>
+      </section>
       <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col ">
         <div className="flex-1 flex flex-col gap-2">
           <div className="flex-1">

@@ -569,12 +569,12 @@ export const splitIntoBlocks = (bytes: Uint8Array): Uint8Array[] => {
 };
 
 export const SBOX_TYPE = {
-  Original: "S_BOX",
-  K4: "S_BOX_4",
-  K44: "S_BOX_44",
-  K81: "S_BOX_81",
-  K111: "S_BOX_111",
-  K128: "S_BOX_128",
+  Original: "Standard",
+  K4: "K4",
+  K44: "K44",
+  K81: "K81",
+  K111: "K111",
+  K128: "K128",
 } as const;
 export type SBoxType = (typeof SBOX_TYPE)[keyof typeof SBOX_TYPE];
 
