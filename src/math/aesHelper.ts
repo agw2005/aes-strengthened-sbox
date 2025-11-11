@@ -3,11 +3,15 @@ import {
   BLOCK_DIMENSION,
   BLOCK_SIZE_BYTES,
   INVERSE_S_BOX,
+  INVERSE_S_BOX_111,
+  INVERSE_S_BOX_128,
   INVERSE_S_BOX_4,
   INVERSE_S_BOX_44,
+  INVERSE_S_BOX_81,
   ROUND_CONSTANTS,
   S_BOX,
   S_BOX_111,
+  S_BOX_128,
   S_BOX_4,
   S_BOX_44,
   S_BOX_81,
@@ -113,6 +117,8 @@ const substituteWord = (word: Uint8Array, sBoxType: SBoxType): Uint8Array => {
     choosenSBox = S_BOX_81;
   } else if (sBoxType === SBOX_TYPE.K111) {
     choosenSBox = S_BOX_111;
+  } else if (sBoxType === SBOX_TYPE.K128) {
+    choosenSBox = S_BOX_128;
   }
   return word.map((byte) => choosenSBox[byte]);
 };
@@ -220,6 +226,8 @@ const substituteBytes = (block: Uint8Array, sBoxType: SBoxType): Uint8Array => {
     choosenSBox = S_BOX_81;
   } else if (sBoxType === SBOX_TYPE.K111) {
     choosenSBox = S_BOX_111;
+  } else if (sBoxType === SBOX_TYPE.K128) {
+    choosenSBox = S_BOX_128;
   }
   const blockElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(blockElementCount);
@@ -331,9 +339,11 @@ const inverseSubstituteBytes = (
   } else if (sBoxType === SBOX_TYPE.K44) {
     choosenSInverseBox = INVERSE_S_BOX_44;
   } else if (sBoxType === SBOX_TYPE.K81) {
-    choosenSInverseBox = S_BOX_81;
+    choosenSInverseBox = INVERSE_S_BOX_81;
   } else if (sBoxType === SBOX_TYPE.K111) {
-    choosenSInverseBox = S_BOX_111;
+    choosenSInverseBox = INVERSE_S_BOX_111;
+  } else if (sBoxType === SBOX_TYPE.K128) {
+    choosenSInverseBox = INVERSE_S_BOX_128;
   }
   const matrixElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(matrixElementCount);
