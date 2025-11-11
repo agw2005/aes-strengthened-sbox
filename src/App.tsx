@@ -14,26 +14,20 @@ import {
   keyToHexadecimal,
 } from "./helper/hex.ts";
 import { AES_KEY_SIZE_BYTES } from "./math/aesConstants.ts";
-import { flattenBlocks, splitIntoBlocks } from "./math/aesHelper.ts";
-import { base64ToUint8Array, uint8ArrayToBase64 } from "./helper/base64.ts";
+import { SBOX_TYPE } from "./math/aesHelper.ts";
 
 function App() {
-  const [aesKey, setAesKey] = useState<Uint8Array>();
-  const [aesKeyHex, setAesKeyHex] = useState<string>("");
-  const [plainText, setPlainText] = useState<string>("");
-  const [aesKeyHexInputBytes, setAesKeyHexInputBytes] = useState<string[]>(
-    Array(16).fill(""),
-  );
+  const [generatedAESKey, setGeneratedAESKey] = useState<Uint8Array>();
+  const [generatedAESKeyInHexadecimal, setGeneratedAESKeyInHexadecimal] =
+    useState<string>("");
+  const [inputPlainText, setInputPlainText] = useState<string>("");
+  const [inputAESKeyInHexadecimal, setInputAESKeyInHexadecimal] = useState<
+    string[]
+  >(Array(16).fill(""));
 
-  const [encryptedPlainTextBase64, setEncryptedPlainTextBase64] = useState<
-    string
-  >(
-    "",
-  );
-  const [encryptedPlainTextInput, setEncryptedPlainTextInput] = useState<
-    string
-  >("");
-  const [decryptedTextBase64, setDecryptedText] = useState<string>("");
+  const [outputEncryptedText, setOutputEncryptedText] = useState<string>("");
+  const [inputEncryptedText, setInputEncryptedText] = useState<string>("");
+  const [outputDecryptedText, setOutputDecryptedText] = useState<string>("");
   const [keyNotGeneratedYetError, setKeyNotGeneratedYetError] = useState<
     string
   >("");
@@ -42,13 +36,13 @@ function App() {
     handleGenerateAesKey: () => {
       const generatedKey = generateAes128Key();
       const hexadecimalKey = keyToHexadecimal(generatedKey);
-      setAesKey(generatedKey);
-      setAesKeyHex(hexadecimalKey);
+      setGeneratedAESKey(generatedKey);
+      setGeneratedAESKeyInHexadecimal(hexadecimalKey);
       setKeyNotGeneratedYetError("");
     },
     handleEncryptPlainText: () => {
       try {
-        if (aesKey === undefined) {
+        if (generatedAESKey === undefined) {
           throw new Error(`Key has not been generated yet`);
         }
       } catch (err) {
@@ -58,15 +52,19 @@ function App() {
         return;
       }
       setKeyNotGeneratedYetError("");
-      const plainTextBlock = stringToBlocks(plainText);
-      const encryptedTextBlocks = encryptBlock(plainTextBlock, aesKey);
-      const encryptedTextBlock = flattenBlocks(encryptedTextBlocks);
-      const encryptedBase64 = uint8ArrayToBase64(encryptedTextBlock);
-      setEncryptedPlainTextBase64(encryptedBase64);
+      const plainTextString = inputPlainText;
+      const plainTextBlocks = stringToBlocks(plainTextString);
+      const encryptedTextBlocks = encryptBlock(
+        plainTextBlocks,
+        generatedAESKey,
+        SBOX_TYPE.Original,
+      );
+      const encryptedTextString = blocksToString(encryptedTextBlocks);
+      setOutputEncryptedText(encryptedTextString);
     },
     handleDecryptEncryptedText: () => {
       try {
-        if (aesKey === undefined) {
+        if (generatedAESKey === undefined) {
           throw new Error(`Key has not been generated yet`);
         }
       } catch (err) {
@@ -76,22 +74,26 @@ function App() {
         return;
       }
       setKeyNotGeneratedYetError("");
-      const hexAesKey = hexBytesToStringHexBytes(aesKeyHexInputBytes);
-      const validAesKey = hexadecimalToKey(hexAesKey);
-      const encryptedTextBlock = base64ToUint8Array(encryptedPlainTextInput);
-      const encryptedTextBlocks = splitIntoBlocks(encryptedTextBlock);
+      const inputAESKeyInHexadecimalToString = hexBytesToStringHexBytes(
+        inputAESKeyInHexadecimal,
+      );
+      const inputAESKey = hexadecimalToKey(inputAESKeyInHexadecimalToString);
+
+      const encryptedTextString = outputEncryptedText;
+      const encryptedTextBlocks = stringToBlocks(encryptedTextString);
       const decryptedTextBlocks = decryptBlock(
         encryptedTextBlocks,
-        validAesKey,
+        inputAESKey,
+        SBOX_TYPE.Original,
       );
-      const decryptedTextStringBase64 = blocksToString(decryptedTextBlocks);
-      setDecryptedText(decryptedTextStringBase64);
+      const decryptedTextString = blocksToString(decryptedTextBlocks);
+      setOutputDecryptedText(decryptedTextString);
     },
   };
 
   const helper = {
     handleByteChange: (index: number, value: string) => {
-      setAesKeyHexInputBytes((prev) => {
+      setInputAESKeyInHexadecimal((prev) => {
         const newBytes = [...prev];
         newBytes[index] = value;
         return newBytes;
@@ -100,13 +102,13 @@ function App() {
     handlePasteFromGeneratedKey: () => {
       const bytes = [];
       for (let i = 0; i < AES_KEY_SIZE_BYTES; i++) {
-        bytes.push(getNthByteFromHexKey(aesKeyHex, i));
+        bytes.push(getNthByteFromHexKey(generatedAESKeyInHexadecimal, i));
       }
-      setAesKeyHexInputBytes(bytes);
+      setInputAESKeyInHexadecimal(bytes);
     },
     handlePasteFromEncryptedText: () => {
-      setEncryptedPlainTextInput("");
-      setEncryptedPlainTextInput(encryptedPlainTextBase64);
+      setInputEncryptedText("");
+      setInputEncryptedText(outputEncryptedText);
     },
     handlePasteAESKeyFromClipboard: async () => {
       try {
@@ -126,7 +128,7 @@ function App() {
         for (let i = 0; i < AES_KEY_SIZE_BYTES; i++) {
           bytes.push(cleanText.slice(i * 2, i * 2 + 2));
         }
-        setAesKeyHexInputBytes(bytes);
+        setInputAESKeyInHexadecimal(bytes);
       } catch (err) {
         console.error("Clipboard paste failed:", err);
       }
@@ -148,15 +150,17 @@ function App() {
         <p className="text-white font-bold">{`AES-128 Key : `}</p>
         <div
           className={`border-2 border-white ${
-            aesKey ? "bg-black" : "bg-yellow-800"
+            generatedAESKey ? "bg-black" : "bg-yellow-800"
           } rounded-2xl max-w-7/8 p-2`}
         >
           <p
             className={`text-white break-all text-center ${
-              aesKey ? "" : "font-bold"
+              generatedAESKey ? "" : "font-bold"
             }`}
           >
-            {aesKey ? aesKeyHex : "AES-key not generated yet"}
+            {generatedAESKey
+              ? generatedAESKeyInHexadecimal
+              : "AES-key not generated yet"}
           </p>
         </div>
       </section>
@@ -180,8 +184,8 @@ function App() {
           </div>
           <form action="" className="flex-99">
             <textarea
-              onChange={(e) => setPlainText(e.currentTarget.value)}
-              value={plainText}
+              onChange={(e) => setInputPlainText(e.currentTarget.value)}
+              value={inputPlainText}
               className="text-white border-white overflow-y-scroll p-2 text-sm resize-none border-5 rounded-2xl w-full h-full"
             >
             </textarea>
@@ -203,7 +207,7 @@ function App() {
           <form action="" className="flex-99">
             <textarea
               disabled
-              value={encryptedPlainTextBase64}
+              value={outputEncryptedText}
               className="text-white border-white overflow-y-scroll p-2 text-sm resize-none border-5 rounded-2xl w-full h-full"
             >
             </textarea>
@@ -215,7 +219,7 @@ function App() {
           Enter an AES key
         </h2>
         <div className="flex w-full items-center gap-0.5 flex-wrap justify-center">
-          {aesKeyHexInputBytes.map((byte, index) => (
+          {inputAESKeyInHexadecimal.map((byte, index) => (
             <React.Fragment key={index}>
               <input
                 onChange={(e) =>
@@ -252,9 +256,8 @@ function App() {
           </div>
           <form action="" className="flex-99">
             <textarea
-              onChange={(e) =>
-                setEncryptedPlainTextInput(e.currentTarget.value)}
-              value={encryptedPlainTextInput}
+              onChange={(e) => setInputEncryptedText(e.currentTarget.value)}
+              value={inputEncryptedText}
               className="text-white border-white overflow-y-scroll p-2 text-sm resize-none border-5 rounded-2xl w-full h-full"
             >
             </textarea>
@@ -283,7 +286,7 @@ function App() {
           <form action="" className="flex-99">
             <textarea
               disabled
-              value={decryptedTextBase64}
+              value={outputDecryptedText}
               className="text-white border-white overflow-y-scroll p-2 text-sm resize-none border-5 rounded-2xl w-full h-full"
             >
             </textarea>

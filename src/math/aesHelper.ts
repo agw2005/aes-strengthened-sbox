@@ -577,3 +577,38 @@ export const SBOX_TYPE = {
   K128: "S_BOX_128",
 } as const;
 export type SBoxType = (typeof SBOX_TYPE)[keyof typeof SBOX_TYPE];
+
+export const base64ToBytes = (base64: string): Uint8Array => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+export const bytesToBase64 = (bytes: Uint8Array): string => {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+export const stringToBase64 = (text: string): string => {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(text);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+export const base64ToString = (base64: string): string => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const decoder = new TextDecoder();
+  return decoder.decode(bytes);
+};

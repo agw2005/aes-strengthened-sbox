@@ -1,5 +1,7 @@
 import { AES_KEY_SIZE_BYTES, BLOCK_SIZE_BYTES } from "./aesConstants.ts";
 import {
+  base64ToBytes,
+  bytesToBase64,
   decryptPerBlock,
   encryptPerBlock,
   generateRandomBytes,
@@ -18,7 +20,7 @@ export const generateAes128Key = () => {
 };
 
 /**
- * Convert a string into block(s) of size 16 bytes.
+ * Convert a string (UTF-8) into block(s) of size 16 bytes.
  *
  * Block(s) are 2D arrays of unsigned 8-bit integers.
  *
@@ -31,9 +33,8 @@ export const generateAes128Key = () => {
  * @returns `Uint8Array[]` containing the block equivalent of the input string.
  */
 export const stringToBlocks = (text: string): Uint8Array[] => {
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(text);
-
+  const textBase64 = btoa(text);
+  const bytes = base64ToBytes(textBase64);
   const numberOfBlocks = Math.ceil(bytes.length / BLOCK_SIZE_BYTES);
   const blocks: Uint8Array[] = [];
 
@@ -52,28 +53,25 @@ export const stringToBlocks = (text: string): Uint8Array[] => {
 };
 
 /**
- * Convert a block(s) of size 16 bytes into a string.
+ * Convert a block(s) of size 16 bytes into a string (UTF-8).
  *
  * @param `blocks` The block(s) that will be converted into a string.
  *
  * @returns A string containg an equivalent of the input block(s).
  */
 export const blocksToString = (blocks: Uint8Array[]): string => {
-  const totalLength = blocks.length * BLOCK_SIZE_BYTES;
-  const combined = new Uint8Array(totalLength);
-
+  const combined = new Uint8Array(blocks.length * BLOCK_SIZE_BYTES);
   for (let i = 0; i < blocks.length; i++) {
     combined.set(blocks[i], i * BLOCK_SIZE_BYTES);
   }
-
   let lastNonZeroIndex = combined.length - 1;
   while (lastNonZeroIndex >= 0 && combined[lastNonZeroIndex] === 0) {
     lastNonZeroIndex--;
   }
   const trimmed = combined.slice(0, lastNonZeroIndex + 1);
+  const textBase64 = bytesToBase64(trimmed);
+  const text = atob(textBase64);
 
-  const decoder = new TextDecoder();
-  const text = decoder.decode(trimmed);
   return text;
 };
 

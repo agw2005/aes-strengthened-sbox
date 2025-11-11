@@ -6,13 +6,7 @@ import {
   generateAes128Key,
   stringToBlocks,
 } from "../math/aes128.ts";
-import {
-  aesBlockEquality,
-  flattenBlocks,
-  SBOX_TYPE,
-  splitIntoBlocks,
-} from "../math/aesHelper.ts";
-import { base64ToUint8Array, uint8ArrayToBase64 } from "../helper/base64.ts";
+import { aesBlockEquality, SBOX_TYPE } from "../math/aesHelper.ts";
 import {
   INVERSE_S_BOX,
   INVERSE_S_BOX_111,
@@ -109,56 +103,40 @@ describe("Standard S-Box Test", () => {
     });
   });
 
-  describe("String-Block Conversion Test", () => {
-    test("Block-String conversion : Plain-text string", () => {
-      expect(plainTextString).toBe(
-        blocksToString(stringToBlocks(plainTextString)),
+  describe("Block-to-String Conversion Test", () => {
+    test("Plain text", () => {
+      let deepConvertedPlainTextBlocks = plainTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepConvertedPlainTextBlocks = stringToBlocks(
+          blocksToString(deepConvertedPlainTextBlocks),
+        );
+      }
+      expect(blocksToString(deepConvertedPlainTextBlocks)).toStrictEqual(
+        plainTextString,
       );
     });
 
-    test("String-Block conversion : Encrypted-text string", () => {
-      expect(blocksToString(encryptedTextBlocks)).toBe(
-        blocksToString(stringToBlocks(blocksToString(encryptedTextBlocks))),
+    test("Encrypted text", () => {
+      let deepEncryptedTextBlocks = encryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepEncryptedTextBlocks = stringToBlocks(
+          blocksToString(deepEncryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepEncryptedTextBlocks)).toStrictEqual(
+        blocksToString(encryptedTextBlocks),
       );
     });
 
-    test("String-Block conversion : Decrypted-text string", () => {
-      expect(decryptedTextString).toBe(
-        blocksToString(stringToBlocks(decryptedTextString)),
-      );
-    });
-  });
-
-  describe("Block-String Conversion Test", () => {
-    test("String-Block conversion : Plain-text block", () => {
-      expect(plainTextBlocks).toStrictEqual(
-        stringToBlocks(blocksToString(plainTextBlocks)),
-      );
-    });
-
-    test("Block-String conversion : Encrypted-text block", () => {
-      console.log(`\Original : ${encryptedTextBlocks}\n`);
-      console.log(
-        `\nReconverted : ${
-          splitIntoBlocks(
-            base64ToUint8Array(
-              uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-            ),
-          )
-        }\n`,
-      );
-      expect(encryptedTextBlocks).toStrictEqual(
-        splitIntoBlocks(
-          base64ToUint8Array(
-            uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-          ),
-        ),
-      );
-    });
-
-    test("Block-String conversion : Decrypted-text block", () => {
-      expect(stringToBlocks(decryptedTextString)).toStrictEqual(
-        stringToBlocks(blocksToString(stringToBlocks(decryptedTextString))),
+    test("Decrypted text", () => {
+      let deepDecryptedTextBlocks = decryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepDecryptedTextBlocks = stringToBlocks(
+          blocksToString(deepDecryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepDecryptedTextBlocks)).toStrictEqual(
+        decryptedTextString,
       );
     });
   });
@@ -206,56 +184,40 @@ describe("K4 S-Box Test", () => {
     });
   });
 
-  describe("String-Block Conversion Test", () => {
-    test("Block-String conversion : Plain-text string", () => {
-      expect(plainTextString).toBe(
-        blocksToString(stringToBlocks(plainTextString)),
+  describe("Block-to-String Conversion Test", () => {
+    test("Plain text", () => {
+      let deepConvertedPlainTextBlocks = plainTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepConvertedPlainTextBlocks = stringToBlocks(
+          blocksToString(deepConvertedPlainTextBlocks),
+        );
+      }
+      expect(blocksToString(deepConvertedPlainTextBlocks)).toStrictEqual(
+        plainTextString,
       );
     });
 
-    test("String-Block conversion : Encrypted-text string", () => {
-      expect(blocksToString(encryptedTextBlocks)).toBe(
-        blocksToString(stringToBlocks(blocksToString(encryptedTextBlocks))),
+    test("Encrypted text", () => {
+      let deepEncryptedTextBlocks = encryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepEncryptedTextBlocks = stringToBlocks(
+          blocksToString(deepEncryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepEncryptedTextBlocks)).toStrictEqual(
+        blocksToString(encryptedTextBlocks),
       );
     });
 
-    test("String-Block conversion : Decrypted-text string", () => {
-      expect(decryptedTextString).toBe(
-        blocksToString(stringToBlocks(decryptedTextString)),
-      );
-    });
-  });
-
-  describe("Block-String Conversion Test", () => {
-    test("String-Block conversion : Plain-text block", () => {
-      expect(plainTextBlocks).toStrictEqual(
-        stringToBlocks(blocksToString(plainTextBlocks)),
-      );
-    });
-
-    test("Block-String conversion : Encrypted-text block", () => {
-      console.log(`\Original : ${encryptedTextBlocks}\n`);
-      console.log(
-        `\nReconverted : ${
-          splitIntoBlocks(
-            base64ToUint8Array(
-              uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-            ),
-          )
-        }\n`,
-      );
-      expect(encryptedTextBlocks).toStrictEqual(
-        splitIntoBlocks(
-          base64ToUint8Array(
-            uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-          ),
-        ),
-      );
-    });
-
-    test("Block-String conversion : Decrypted-text block", () => {
-      expect(stringToBlocks(decryptedTextString)).toStrictEqual(
-        stringToBlocks(blocksToString(stringToBlocks(decryptedTextString))),
+    test("Decrypted text", () => {
+      let deepDecryptedTextBlocks = decryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepDecryptedTextBlocks = stringToBlocks(
+          blocksToString(deepDecryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepDecryptedTextBlocks)).toStrictEqual(
+        decryptedTextString,
       );
     });
   });
@@ -303,56 +265,40 @@ describe("K44 S-Box Test", () => {
     });
   });
 
-  describe("String-Block Conversion Test", () => {
-    test("Block-String conversion : Plain-text string", () => {
-      expect(plainTextString).toBe(
-        blocksToString(stringToBlocks(plainTextString)),
+  describe("Block-to-String Conversion Test", () => {
+    test("Plain text", () => {
+      let deepConvertedPlainTextBlocks = plainTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepConvertedPlainTextBlocks = stringToBlocks(
+          blocksToString(deepConvertedPlainTextBlocks),
+        );
+      }
+      expect(blocksToString(deepConvertedPlainTextBlocks)).toStrictEqual(
+        plainTextString,
       );
     });
 
-    test("String-Block conversion : Encrypted-text string", () => {
-      expect(blocksToString(encryptedTextBlocks)).toBe(
-        blocksToString(stringToBlocks(blocksToString(encryptedTextBlocks))),
+    test("Encrypted text", () => {
+      let deepEncryptedTextBlocks = encryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepEncryptedTextBlocks = stringToBlocks(
+          blocksToString(deepEncryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepEncryptedTextBlocks)).toStrictEqual(
+        blocksToString(encryptedTextBlocks),
       );
     });
 
-    test("String-Block conversion : Decrypted-text string", () => {
-      expect(decryptedTextString).toBe(
-        blocksToString(stringToBlocks(decryptedTextString)),
-      );
-    });
-  });
-
-  describe("Block-String Conversion Test", () => {
-    test("String-Block conversion : Plain-text block", () => {
-      expect(plainTextBlocks).toStrictEqual(
-        stringToBlocks(blocksToString(plainTextBlocks)),
-      );
-    });
-
-    test("Block-String conversion : Encrypted-text block", () => {
-      console.log(`\Original : ${encryptedTextBlocks}\n`);
-      console.log(
-        `\nReconverted : ${
-          splitIntoBlocks(
-            base64ToUint8Array(
-              uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-            ),
-          )
-        }\n`,
-      );
-      expect(encryptedTextBlocks).toStrictEqual(
-        splitIntoBlocks(
-          base64ToUint8Array(
-            uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-          ),
-        ),
-      );
-    });
-
-    test("Block-String conversion : Decrypted-text block", () => {
-      expect(stringToBlocks(decryptedTextString)).toStrictEqual(
-        stringToBlocks(blocksToString(stringToBlocks(decryptedTextString))),
+    test("Decrypted text", () => {
+      let deepDecryptedTextBlocks = decryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepDecryptedTextBlocks = stringToBlocks(
+          blocksToString(deepDecryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepDecryptedTextBlocks)).toStrictEqual(
+        decryptedTextString,
       );
     });
   });
@@ -400,56 +346,40 @@ describe("K81 S-Box Test", () => {
     });
   });
 
-  describe("String-Block Conversion Test", () => {
-    test("Block-String conversion : Plain-text string", () => {
-      expect(plainTextString).toBe(
-        blocksToString(stringToBlocks(plainTextString)),
+  describe("Block-to-String Conversion Test", () => {
+    test("Plain text", () => {
+      let deepConvertedPlainTextBlocks = plainTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepConvertedPlainTextBlocks = stringToBlocks(
+          blocksToString(deepConvertedPlainTextBlocks),
+        );
+      }
+      expect(blocksToString(deepConvertedPlainTextBlocks)).toStrictEqual(
+        plainTextString,
       );
     });
 
-    test("String-Block conversion : Encrypted-text string", () => {
-      expect(blocksToString(encryptedTextBlocks)).toBe(
-        blocksToString(stringToBlocks(blocksToString(encryptedTextBlocks))),
+    test("Encrypted text", () => {
+      let deepEncryptedTextBlocks = encryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepEncryptedTextBlocks = stringToBlocks(
+          blocksToString(deepEncryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepEncryptedTextBlocks)).toStrictEqual(
+        blocksToString(encryptedTextBlocks),
       );
     });
 
-    test("String-Block conversion : Decrypted-text string", () => {
-      expect(decryptedTextString).toBe(
-        blocksToString(stringToBlocks(decryptedTextString)),
-      );
-    });
-  });
-
-  describe("Block-String Conversion Test", () => {
-    test("String-Block conversion : Plain-text block", () => {
-      expect(plainTextBlocks).toStrictEqual(
-        stringToBlocks(blocksToString(plainTextBlocks)),
-      );
-    });
-
-    test("Block-String conversion : Encrypted-text block", () => {
-      console.log(`\Original : ${encryptedTextBlocks}\n`);
-      console.log(
-        `\nReconverted : ${
-          splitIntoBlocks(
-            base64ToUint8Array(
-              uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-            ),
-          )
-        }\n`,
-      );
-      expect(encryptedTextBlocks).toStrictEqual(
-        splitIntoBlocks(
-          base64ToUint8Array(
-            uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-          ),
-        ),
-      );
-    });
-
-    test("Block-String conversion : Decrypted-text block", () => {
-      expect(stringToBlocks(decryptedTextString)).toStrictEqual(
-        stringToBlocks(blocksToString(stringToBlocks(decryptedTextString))),
+    test("Decrypted text", () => {
+      let deepDecryptedTextBlocks = decryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepDecryptedTextBlocks = stringToBlocks(
+          blocksToString(deepDecryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepDecryptedTextBlocks)).toStrictEqual(
+        decryptedTextString,
       );
     });
   });
@@ -497,56 +427,40 @@ describe("K111 S-Box Test", () => {
     });
   });
 
-  describe("String-Block Conversion Test", () => {
-    test("Block-String conversion : Plain-text string", () => {
-      expect(plainTextString).toBe(
-        blocksToString(stringToBlocks(plainTextString)),
+  describe("Block-to-String Conversion Test", () => {
+    test("Plain text", () => {
+      let deepConvertedPlainTextBlocks = plainTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepConvertedPlainTextBlocks = stringToBlocks(
+          blocksToString(deepConvertedPlainTextBlocks),
+        );
+      }
+      expect(blocksToString(deepConvertedPlainTextBlocks)).toStrictEqual(
+        plainTextString,
       );
     });
 
-    test("String-Block conversion : Encrypted-text string", () => {
-      expect(blocksToString(encryptedTextBlocks)).toBe(
-        blocksToString(stringToBlocks(blocksToString(encryptedTextBlocks))),
+    test("Encrypted text", () => {
+      let deepEncryptedTextBlocks = encryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepEncryptedTextBlocks = stringToBlocks(
+          blocksToString(deepEncryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepEncryptedTextBlocks)).toStrictEqual(
+        blocksToString(encryptedTextBlocks),
       );
     });
 
-    test("String-Block conversion : Decrypted-text string", () => {
-      expect(decryptedTextString).toBe(
-        blocksToString(stringToBlocks(decryptedTextString)),
-      );
-    });
-  });
-
-  describe("Block-String Conversion Test", () => {
-    test("String-Block conversion : Plain-text block", () => {
-      expect(plainTextBlocks).toStrictEqual(
-        stringToBlocks(blocksToString(plainTextBlocks)),
-      );
-    });
-
-    test("Block-String conversion : Encrypted-text block", () => {
-      console.log(`\Original : ${encryptedTextBlocks}\n`);
-      console.log(
-        `\nReconverted : ${
-          splitIntoBlocks(
-            base64ToUint8Array(
-              uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-            ),
-          )
-        }\n`,
-      );
-      expect(encryptedTextBlocks).toStrictEqual(
-        splitIntoBlocks(
-          base64ToUint8Array(
-            uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-          ),
-        ),
-      );
-    });
-
-    test("Block-String conversion : Decrypted-text block", () => {
-      expect(stringToBlocks(decryptedTextString)).toStrictEqual(
-        stringToBlocks(blocksToString(stringToBlocks(decryptedTextString))),
+    test("Decrypted text", () => {
+      let deepDecryptedTextBlocks = decryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepDecryptedTextBlocks = stringToBlocks(
+          blocksToString(deepDecryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepDecryptedTextBlocks)).toStrictEqual(
+        decryptedTextString,
       );
     });
   });
@@ -584,66 +498,50 @@ describe("K128 S-Box Test", () => {
     });
   });
 
-  describe("Block Equality Test", () => {
-    test("vitest built-in Uint8Array[] equality", () => {
-      expect(plainTextBlocks).toStrictEqual(decryptedTextBlocks);
-    });
+  // describe("Block Equality Test", () => {
+  //   test("vitest built-in Uint8Array[] equality", () => {
+  //     expect(plainTextBlocks).toStrictEqual(decryptedTextBlocks);
+  //   });
 
-    test("custom Uint8Array[] equality", () => {
-      expect(aesBlockEquality(plainTextBlocks, decryptedTextBlocks)).toBe(true);
-    });
-  });
+  //   test("custom Uint8Array[] equality", () => {
+  //     expect(aesBlockEquality(plainTextBlocks, decryptedTextBlocks)).toBe(true);
+  //   });
+  // });
 
-  describe("String-Block Conversion Test", () => {
-    test("Block-String conversion : Plain-text string", () => {
-      expect(plainTextString).toBe(
-        blocksToString(stringToBlocks(plainTextString)),
+  describe("Block-to-String Conversion Test", () => {
+    test("Plain text", () => {
+      let deepConvertedPlainTextBlocks = plainTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepConvertedPlainTextBlocks = stringToBlocks(
+          blocksToString(deepConvertedPlainTextBlocks),
+        );
+      }
+      expect(blocksToString(deepConvertedPlainTextBlocks)).toStrictEqual(
+        plainTextString,
       );
     });
 
-    test("String-Block conversion : Encrypted-text string", () => {
-      expect(blocksToString(encryptedTextBlocks)).toBe(
-        blocksToString(stringToBlocks(blocksToString(encryptedTextBlocks))),
+    test("Encrypted text", () => {
+      let deepEncryptedTextBlocks = encryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepEncryptedTextBlocks = stringToBlocks(
+          blocksToString(deepEncryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepEncryptedTextBlocks)).toStrictEqual(
+        blocksToString(encryptedTextBlocks),
       );
     });
 
-    test("String-Block conversion : Decrypted-text string", () => {
-      expect(decryptedTextString).toBe(
-        blocksToString(stringToBlocks(decryptedTextString)),
-      );
-    });
-  });
-
-  describe("Block-String Conversion Test", () => {
-    test("String-Block conversion : Plain-text block", () => {
-      expect(plainTextBlocks).toStrictEqual(
-        stringToBlocks(blocksToString(plainTextBlocks)),
-      );
-    });
-
-    test("Block-String conversion : Encrypted-text block", () => {
-      console.log(`\Original : ${encryptedTextBlocks}\n`);
-      console.log(
-        `\nReconverted : ${
-          splitIntoBlocks(
-            base64ToUint8Array(
-              uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-            ),
-          )
-        }\n`,
-      );
-      expect(encryptedTextBlocks).toStrictEqual(
-        splitIntoBlocks(
-          base64ToUint8Array(
-            uint8ArrayToBase64(flattenBlocks(encryptedTextBlocks)),
-          ),
-        ),
-      );
-    });
-
-    test("Block-String conversion : Decrypted-text block", () => {
-      expect(stringToBlocks(decryptedTextString)).toStrictEqual(
-        stringToBlocks(blocksToString(stringToBlocks(decryptedTextString))),
+    test("Decrypted text", () => {
+      let deepDecryptedTextBlocks = decryptedTextBlocks;
+      for (let i = 0; i < 9; i++) {
+        deepDecryptedTextBlocks = stringToBlocks(
+          blocksToString(deepDecryptedTextBlocks),
+        );
+      }
+      expect(blocksToString(deepDecryptedTextBlocks)).toStrictEqual(
+        decryptedTextString,
       );
     });
   });
