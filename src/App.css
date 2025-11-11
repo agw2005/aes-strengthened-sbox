@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@custom-variant dark (&where(.dark, .dark *));
+
+@theme {
+  --color-pastel-pink: rgb(247, 207, 216);
+  --color-pastel-yellow: rgb(244, 248, 211);
+  --color-pastel-green: rgb(166, 214, 214);
+  --color-pastel-purple: rgb(142, 125, 190);
+}
+
+@plugin "tailwind-scrollbar" {
+  nocompatible: true;
+  preferredstrategy: "pseudoelements";
+}

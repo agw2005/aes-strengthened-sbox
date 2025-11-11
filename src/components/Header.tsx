@@ -7,7 +7,7 @@ interface HeaderProps {
 const Header = ({ children }: HeaderProps) => {
   return (
     <>
-      <h1 className="font-extrabold text-sm md:text-3xl text-center text-white">
+      <h1 className="text-pastel-green filter drop-shadow font-extrabold text-[1.7rem] md:text-3xl text-center">
         {children}
       </h1>
       <CustomNav />
