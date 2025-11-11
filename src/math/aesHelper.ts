@@ -7,6 +7,7 @@ import {
   INVERSE_S_BOX_44,
   ROUND_CONSTANTS,
   S_BOX,
+  S_BOX_111,
   S_BOX_4,
   S_BOX_44,
   S_BOX_81,
@@ -110,6 +111,8 @@ const substituteWord = (word: Uint8Array, sBoxType: SBoxType): Uint8Array => {
     choosenSBox = S_BOX_44;
   } else if (sBoxType === SBOX_TYPE.K81) {
     choosenSBox = S_BOX_81;
+  } else if (sBoxType === SBOX_TYPE.K111) {
+    choosenSBox = S_BOX_111;
   }
   return word.map((byte) => choosenSBox[byte]);
 };
@@ -215,6 +218,8 @@ const substituteBytes = (block: Uint8Array, sBoxType: SBoxType): Uint8Array => {
     choosenSBox = S_BOX_44;
   } else if (sBoxType === SBOX_TYPE.K81) {
     choosenSBox = S_BOX_81;
+  } else if (sBoxType === SBOX_TYPE.K111) {
+    choosenSBox = S_BOX_111;
   }
   const blockElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(blockElementCount);
@@ -327,6 +332,8 @@ const inverseSubstituteBytes = (
     choosenSInverseBox = INVERSE_S_BOX_44;
   } else if (sBoxType === SBOX_TYPE.K81) {
     choosenSInverseBox = S_BOX_81;
+  } else if (sBoxType === SBOX_TYPE.K111) {
+    choosenSInverseBox = S_BOX_111;
   }
   const matrixElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(matrixElementCount);
