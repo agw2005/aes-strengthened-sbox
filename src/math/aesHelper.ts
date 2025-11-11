@@ -4,9 +4,11 @@ import {
   BLOCK_SIZE_BYTES,
   INVERSE_S_BOX,
   INVERSE_S_BOX_4,
+  INVERSE_S_BOX_44,
   ROUND_CONSTANTS,
   S_BOX,
   S_BOX_4,
+  S_BOX_44,
 } from "./aesConstants.ts";
 import {
   EXPANDED_KEY_COUNT,
@@ -103,6 +105,8 @@ const substituteWord = (word: Uint8Array, sBoxType: SBoxType): Uint8Array => {
     choosenSBox = S_BOX;
   } else if (sBoxType === SBOX_TYPE.K4) {
     choosenSBox = S_BOX_4;
+  } else if (sBoxType === SBOX_TYPE.K44) {
+    choosenSBox = S_BOX_44;
   }
   return word.map((byte) => choosenSBox[byte]);
 };
@@ -204,6 +208,8 @@ const substituteBytes = (block: Uint8Array, sBoxType: SBoxType): Uint8Array => {
     choosenSBox = S_BOX;
   } else if (sBoxType === SBOX_TYPE.K4) {
     choosenSBox = S_BOX_4;
+  } else if (sBoxType === SBOX_TYPE.K44) {
+    choosenSBox = S_BOX_44;
   }
   const blockElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(blockElementCount);
@@ -312,6 +318,8 @@ const inverseSubstituteBytes = (
     choosenSInverseBox = INVERSE_S_BOX;
   } else if (sBoxType === SBOX_TYPE.K4) {
     choosenSInverseBox = INVERSE_S_BOX_4;
+  } else if (sBoxType === SBOX_TYPE.K44) {
+    choosenSInverseBox = INVERSE_S_BOX_44;
   }
   const matrixElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(matrixElementCount);
