@@ -3,6 +3,7 @@ import {
   decryptPerBlock,
   encryptPerBlock,
   generateRandomBytes,
+  type SBoxType,
 } from "./aesHelper.ts";
 
 /**
@@ -88,10 +89,11 @@ export const blocksToString = (blocks: Uint8Array[]): string => {
 export const encryptBlock = (
   plainTextBlocks: Uint8Array[],
   aesKey: Uint8Array,
+  sBoxType: SBoxType,
 ): Uint8Array[] => {
   const encryptedBlock: Uint8Array[] = structuredClone(plainTextBlocks);
   for (let i = 0; i < plainTextBlocks.length; i++) {
-    encryptedBlock[i] = encryptPerBlock(plainTextBlocks[i], aesKey);
+    encryptedBlock[i] = encryptPerBlock(plainTextBlocks[i], aesKey, sBoxType);
   }
   return encryptedBlock;
 };
@@ -108,10 +110,11 @@ export const encryptBlock = (
 export const decryptBlock = (
   encryptedBlocks: Uint8Array[],
   aesKey: Uint8Array,
+  sBoxType: SBoxType,
 ): Uint8Array[] => {
   const decryptedBlock: Uint8Array[] = structuredClone(encryptedBlocks);
   for (let i = 0; i < encryptedBlocks.length; i++) {
-    decryptedBlock[i] = decryptPerBlock(encryptedBlocks[i], aesKey);
+    decryptedBlock[i] = decryptPerBlock(encryptedBlocks[i], aesKey, sBoxType);
   }
   return decryptedBlock;
 };

@@ -25,7 +25,9 @@ function App() {
     Array(16).fill(""),
   );
 
-  const [encryptedPlainTextBase64, setEncryptedPlainText] = useState<string>(
+  const [encryptedPlainTextBase64, setEncryptedPlainTextBase64] = useState<
+    string
+  >(
     "",
   );
   const [encryptedPlainTextInput, setEncryptedPlainTextInput] = useState<
@@ -60,7 +62,7 @@ function App() {
       const encryptedTextBlocks = encryptBlock(plainTextBlock, aesKey);
       const encryptedTextBlock = flattenBlocks(encryptedTextBlocks);
       const encryptedBase64 = uint8ArrayToBase64(encryptedTextBlock);
-      setEncryptedPlainText(encryptedBase64);
+      setEncryptedPlainTextBase64(encryptedBase64);
     },
     handleDecryptEncryptedText: () => {
       try {

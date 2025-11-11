@@ -3,8 +3,10 @@ import {
   BLOCK_DIMENSION,
   BLOCK_SIZE_BYTES,
   INVERSE_S_BOX,
+  INVERSE_S_BOX_4,
   ROUND_CONSTANTS,
   S_BOX,
+  S_BOX_4,
 } from "./aesConstants.ts";
 import {
   EXPANDED_KEY_COUNT,
@@ -95,8 +97,14 @@ const rotateWord = (word: Uint8Array): Uint8Array => {
  * @param `word` A 4-byte Uint8Array representing a word to substitute.
  * @returns `Uint8Array` The word where each byte is the substituted value from `subByteBox`.
  */
-const substituteWord = (word: Uint8Array): Uint8Array => {
-  return word.map((byte) => S_BOX[byte]);
+const substituteWord = (word: Uint8Array, sBoxType: SBoxType): Uint8Array => {
+  let choosenSBox: number[] = [];
+  if (sBoxType === SBOX_TYPE.Original) {
+    choosenSBox = S_BOX;
+  } else if (sBoxType === SBOX_TYPE.K4) {
+    choosenSBox = S_BOX_4;
+  }
+  return word.map((byte) => choosenSBox[byte]);
 };
 
 /**
@@ -113,7 +121,10 @@ const substituteWord = (word: Uint8Array): Uint8Array => {
  * @param `aesKey` The original AES key as a `Uint8Array` of length 16 bytes.
  * @returns `Uint8Array` The expanded AES key.
  */
-export const expandKey = (aesKey: Uint8Array): Uint8Array => {
+export const expandKey = (
+  aesKey: Uint8Array,
+  sBoxType: SBoxType,
+): Uint8Array => {
   const expandedAESKeySizeBytes = EXPANDED_KEY_COUNT * AES_KEY_SIZE_BYTES;
   const expandedKey = new Uint8Array(expandedAESKeySizeBytes);
   expandedKey.set(aesKey);
@@ -127,7 +138,7 @@ export const expandKey = (aesKey: Uint8Array): Uint8Array => {
 
     if (bytesGenerated % AES_KEY_SIZE_BYTES === 0) {
       const rotated = rotateWord(temp);
-      const substituted = substituteWord(rotated);
+      const substituted = substituteWord(rotated, sBoxType);
       substituted[0] ^= ROUND_CONSTANTS[roundConstantsIteration];
       roundConstantsIteration++;
       temp.set(substituted);
@@ -153,8 +164,9 @@ export const expandKey = (aesKey: Uint8Array): Uint8Array => {
 export const encryptPerBlock = (
   block: Uint8Array,
   aesKey: Uint8Array,
+  sBoxType: SBoxType,
 ): Uint8Array => {
-  const expandedKey = expandKey(aesKey);
+  const expandedKey = expandKey(aesKey, sBoxType);
   const startingRound = 1;
   const endingRound = 9;
   let resultBlock = addRoundKeys(block, expandedKey.slice(0, 16));
@@ -164,14 +176,14 @@ export const encryptPerBlock = (
       round * BLOCK_SIZE_BYTES,
       round * BLOCK_SIZE_BYTES + BLOCK_SIZE_BYTES,
     );
-    resultBlock = substituteBytes(resultBlock);
+    resultBlock = substituteBytes(resultBlock, sBoxType);
     resultBlock = shiftRows(resultBlock);
     resultBlock = mixColumns(resultBlock);
     resultBlock = addRoundKeys(resultBlock, roundKey);
   }
 
   const finalRoundKey = expandedKey.slice(160, 176);
-  resultBlock = substituteBytes(resultBlock);
+  resultBlock = substituteBytes(resultBlock, sBoxType);
   resultBlock = shiftRows(resultBlock);
   resultBlock = addRoundKeys(resultBlock, finalRoundKey);
 
@@ -186,11 +198,17 @@ export const encryptPerBlock = (
  * @param `block` The `block` of bytes to be substituted; its length should be `BLOCK_DIMENSION` squared.
  * @returns `Uint8Array` A new block with the substituted bytes.
  */
-const substituteBytes = (block: Uint8Array): Uint8Array => {
+const substituteBytes = (block: Uint8Array, sBoxType: SBoxType): Uint8Array => {
+  let choosenSBox: number[] = [];
+  if (sBoxType === SBOX_TYPE.Original) {
+    choosenSBox = S_BOX;
+  } else if (sBoxType === SBOX_TYPE.K4) {
+    choosenSBox = S_BOX_4;
+  }
   const blockElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(blockElementCount);
   for (let i = 0; i < blockElementCount; i++) {
-    substitutedBytesBlock[i] = S_BOX[block[i]];
+    substitutedBytesBlock[i] = choosenSBox[block[i]];
   }
   return substitutedBytesBlock;
 };
@@ -248,8 +266,9 @@ const mixColumns = (block: Uint8Array): Uint8Array => {
 export const decryptPerBlock = (
   block: Uint8Array,
   aesKey: Uint8Array,
+  sBoxType: SBoxType,
 ): Uint8Array => {
-  const expandedKey = expandKey(aesKey);
+  const expandedKey = expandKey(aesKey, sBoxType);
   const startingRound = 1;
   const endingRound = 9;
 
@@ -257,7 +276,7 @@ export const decryptPerBlock = (
 
   for (let round = endingRound; round >= startingRound; round--) {
     resultBlock = inverseShiftRows(resultBlock);
-    resultBlock = inverseSubstituteBytes(resultBlock);
+    resultBlock = inverseSubstituteBytes(resultBlock, sBoxType);
     resultBlock = addRoundKeys(
       resultBlock,
       expandedKey.slice(
@@ -270,7 +289,7 @@ export const decryptPerBlock = (
 
   const finalRoundKey = expandedKey.slice(0, 16);
   resultBlock = inverseShiftRows(resultBlock);
-  resultBlock = inverseSubstituteBytes(resultBlock);
+  resultBlock = inverseSubstituteBytes(resultBlock, sBoxType);
   resultBlock = addRoundKeys(resultBlock, finalRoundKey);
 
   return resultBlock;
@@ -284,11 +303,20 @@ export const decryptPerBlock = (
  * @param `block` - The input block of bytes to be inverse substituted.
  * @returns `Uint8Array` A new block with bytes replaced according to the inverse S-box.
  */
-const inverseSubstituteBytes = (block: Uint8Array): Uint8Array => {
+const inverseSubstituteBytes = (
+  block: Uint8Array,
+  sBoxType: SBoxType,
+): Uint8Array => {
+  let choosenSInverseBox: number[] = [];
+  if (sBoxType === SBOX_TYPE.Original) {
+    choosenSInverseBox = INVERSE_S_BOX;
+  } else if (sBoxType === SBOX_TYPE.K4) {
+    choosenSInverseBox = INVERSE_S_BOX_4;
+  }
   const matrixElementCount = BLOCK_DIMENSION ** 2;
   const substitutedBytesBlock = new Uint8Array(matrixElementCount);
   for (let i = 0; i < matrixElementCount; i++) {
-    substitutedBytesBlock[i] = INVERSE_S_BOX[block[i]];
+    substitutedBytesBlock[i] = choosenSInverseBox[block[i]];
   }
   return substitutedBytesBlock;
 };
@@ -507,3 +535,13 @@ export const splitIntoBlocks = (bytes: Uint8Array): Uint8Array[] => {
   }
   return blocks;
 };
+
+export const SBOX_TYPE = {
+  Original: "S_BOX",
+  K4: "S_BOX_4",
+  K44: "S_BOX_44",
+  K81: "S_BOX_81",
+  K111: "S_BOX_111",
+  K128: "S_BOX_128",
+} as const;
+export type SBoxType = (typeof SBOX_TYPE)[keyof typeof SBOX_TYPE];
