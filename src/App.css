@@ -3,10 +3,15 @@
 @custom-variant dark (&where(.dark, .dark *));
 
 @theme {
-  --color-pastel-secondary: rgb(247, 207, 216);
+  --color-pastel-background: rgb(142, 125, 190);
   --color-pastel-foreground: rgb(244, 248, 211);
   --color-pastel-primary: rgb(166, 214, 214);
-  --color-pastel-background: rgb(142, 125, 190);
+  --color-pastel-secondary: rgb(247, 207, 216);
+
+  --color-dark-background: rgb(22, 0, 64);
+  --color-dark-foreground: rgb(76, 0, 112);
+  --color-dark-primary: rgb(154, 6, 128);
+  --color-dark-secondary: rgb(121, 1, 140);
 }
 
 @plugin "tailwind-scrollbar" {
