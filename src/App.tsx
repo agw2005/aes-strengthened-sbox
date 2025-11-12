@@ -140,11 +140,11 @@ function App() {
   };
 
   return (
-    <main className="bg-pastel-background min-h-screen p-8 flex flex-col gap-8">
+    <main className="bg-pastel-background dark:bg-dark-background min-h-screen p-8 flex flex-col gap-8">
       <Header>Strengthened AES via S-Box Modification</Header>
       <section className="md:w-1/2 self-center flex flex-col gap-4 m-0">
-        <hr className="text-pastel-secondary mb-2" />
-        <p className="text-pastel-primary text-center text-sm md:text-base lg:text-xl font-bold filter drop-shadow">
+        <hr className="text-pastel-secondary dark:text-dark-secondary mb-2" />
+        <p className="text-pastel-primary dark:text-dark-primary text-center text-sm md:text-base lg:text-xl font-bold filter drop-shadow">
           This web app is an implementation of the research article,{" "}
           <strong>
             AES S-box modification uses affine matrices exploration for
@@ -159,26 +159,24 @@ function App() {
           with both the standard &amp; modified S-Boxes. Thus, sufficient for
           implementing the idea of the research article.
         </p>
-        <hr className="text-pastel-secondary mt-2" />
+        <hr className="text-pastel-secondary dark:text-dark-secondary mt-2" />
       </section>
       <section className="flex flex-col gap-4 items-center">
         <button
           onClick={aes.handleGenerateAesKey}
           type="button"
-          className="shadow-2xl h-max self-center rounded-2xl font-bold filter drop-shadow p-2 md:p-4 bg-pastel-foreground hover:bg-pastel-secondary hover:text-black active:bg-pastel-primary active:text-black"
+          className="shadow-2xl h-max self-center rounded-2xl font-bold filter drop-shadow p-2 md:p-4 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
         >
           Generate key
         </button>
-        <h2 className="text-pastel-primary text-2xl font-bold filter drop-shadow">
+        <h2 className="text-pastel-primary dark:text-dark-primary text-2xl font-bold filter drop-shadow">
           {`AES-128 Key : `}
         </h2>
         <div
-          className={`border-2 border-pastel-primary filter drop-shadow shadow-2xl ${
-            generatedAESKey ? "bg-pastel-secondary" : "bg-pastel-secondary"
-          } rounded-2xl max-w-7/8 p-2`}
+          className={`border-2 border-pastel-primary dark:border-dark-primary filter drop-shadow shadow-2xl bg-pastel-secondary dark:bg-dark-secondary rounded-2xl max-w-7/8 p-2`}
         >
           <p
-            className={`text-black font-bold break-all text-center ${
+            className={`text-black dark:text-white font-bold break-all text-center ${
               generatedAESKey ? "" : "font-bold"
             }`}
           >
@@ -188,9 +186,9 @@ function App() {
           </p>
         </div>
       </section>
-      <hr className="text-pastel-secondary md:self-center" />
       <section className="flex flex-col gap-2">
-        <h2 className="text-pastel-primary text-center font-bold text-2xl filter drop-shadow">
+        <hr className="text-pastel-secondary dark:text-dark-secondary" />
+        <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-2xl filter drop-shadow">
           S-Box Type :
         </h2>
         <div className="flex justify-center gap-4 flex-wrap">
@@ -200,10 +198,10 @@ function App() {
                 key={SboxTypes}
                 onClick={() => setInputSelectedSBoxType(SboxTypes)}
                 type="button"
-                className={`h-max min-w-20 self-center rounded-2xl filter drop-shadow text-sm font-bold p-2 md:p-2 shadow-2xl ${
+                className={`dark:text-white h-max min-w-20 self-center rounded-2xl filter drop-shadow text-sm font-bold p-2 md:p-2 shadow-2xl ${
                   SboxTypes === inputSelectedSBoxType
-                    ? "bg-pastel-secondary hover:bg-pastel-primary active:bg-pastel-foreground"
-                    : "bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary"
+                    ? "bg-pastel-secondary dark:bg-dark-secondary hover:bg-pastel-primary dark:hover:bg-dark-primary active:bg-pastel-foreground dark:active:bg-dark-foreground"
+                    : "bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary dark:bg-dark-foreground dark:hover:bg-dark-secondary dark:active:bg-dark-primary"
                 }`}
               >
                 {SboxTypes}
@@ -231,17 +229,17 @@ function App() {
         : (
           ""
         )}
-      <hr className="text-pastel-secondary" />
+      <hr className="text-pastel-secondary dark:text-dark-secondary" />
       <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col">
         <div className="md:flex-1 h-64 flex flex-col gap-2">
-          <h2 className="text-pastel-primary text-center font-bold text-2xl filter drop-shadow">
+          <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-2xl filter drop-shadow">
             Plain text
           </h2>
           <div className="h-full">
             <textarea
               onChange={(e) => setInputPlainText(e.currentTarget.value)}
               value={inputPlainText}
-              className="shadow-2xl text-black bg-pastel-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background filter drop-shadow"
+              className="shadow-2xl text-black dark:text-white bg-pastel-foreground dark:bg-dark-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background dark:scrollbar-thumb-dark-background filter drop-shadow"
             >
             </textarea>
           </div>
@@ -249,13 +247,13 @@ function App() {
         <button
           type="button"
           onClick={aes.handleEncryptPlainText}
-          className="shadow-2xl text-sm font-bold h-max self-center md:relative md:bottom-9 rounded-2xl p-2 bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary"
+          className="shadow-2xl text-sm font-bold h-max self-center md:relative md:bottom-9 rounded-2xl p-2 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
         >
           Encrypt
         </button>
         <div className="md:flex-1 h-64 flex flex-col gap-2">
           <div className="flex-1">
-            <h2 className="text-pastel-primary text-center font-bold text-2xl filter drop-shadow">
+            <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-2xl filter drop-shadow">
               Encrypted text
             </h2>
           </div>
@@ -263,15 +261,15 @@ function App() {
             <textarea
               disabled
               value={outputEncryptedText}
-              className="shadow-2xl text-black bg-pastel-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background filter drop-shadow"
+              className="shadow-2xl text-black dark:text-white bg-pastel-foreground dark:bg-dark-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background dark:scrollbar-thumb-dark-background filter drop-shadow"
             >
             </textarea>
           </form>
         </div>
       </section>
-      <hr className="text-pastel-secondary" />
+      <hr className="text-pastel-secondary dark:text-dark-secondary" />
       <section className="self-center flex flex-col gap-4 items-center w-full">
-        <h2 className="text-pastel-primary text-center font-bold text-2xl drop-shadow">
+        <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-2xl drop-shadow">
           Enter an AES key
         </h2>
         <div className="flex w-full items-center gap-0.5 flex-wrap justify-center">
@@ -282,10 +280,12 @@ function App() {
                   helper.handleByteChange(index, e.currentTarget.value)}
                 value={byte}
                 maxLength={2}
-                className="outline-0 font-bold text-center bg-pastel-foreground py-2 text-xs w-6 shadow-2xl"
+                className="outline-0 font-bold text-center dark:border dark:text-white bg-pastel-foreground dark:bg-dark-foreground py-2 text-xs w-6 shadow-2xl"
               />
               {index < 15 && (
-                <p className="text-pastel-secondary text-2xl font-bold">:</p>
+                <p className="text-pastel-secondary dark:text-white text-2xl font-bold">
+                  :
+                </p>
               )}
             </React.Fragment>
           ))}
@@ -293,36 +293,36 @@ function App() {
         <button
           type="button"
           onClick={helper.handlePasteFromGeneratedKey}
-          className="shadow-2xl h-max font-bold self-center rounded-2xl p-2 bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary"
+          className="shadow-2xl h-max font-bold self-center rounded-2xl p-2 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
         >
           Paste from generated key
         </button>
         <button
           type="button"
           onClick={helper.handlePasteAESKeyFromClipboard}
-          className="shadow-2xl h-max font-bold self-center rounded-2xl p-2 bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary"
+          className="shadow-2xl h-max font-bold self-center rounded-2xl p-2 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
         >
           Paste from clipboard
         </button>
       </section>
-      <hr className="text-pastel-secondary" />
+      <hr className="text-pastel-secondary dark:text-dark-secondary" />
       <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col ">
         <div className="md:flex-1 h-64 flex flex-col gap-2">
-          <h2 className="text-pastel-primary text-center font-bold text-xl md:text-2xl filter drop-shadow">
+          <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-xl md:text-2xl filter drop-shadow">
             Enter an encrypted text
           </h2>
           <div className="h-full">
             <textarea
               onChange={(e) => setInputEncryptedText(e.currentTarget.value)}
               value={inputEncryptedText}
-              className="shadow-2xl text-black bg-pastel-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background filter drop-shadow"
+              className="shadow-2xl text-black dark:text-white bg-pastel-foreground dark:bg-dark-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background dark:scrollbar-thumb-dark-background filter drop-shadow"
             >
             </textarea>
           </div>
           <button
             type="button"
             onClick={helper.handlePasteFromEncryptedText}
-            className="shadow-2xl mt-3 font-bold h-max self-center rounded-2xl p-2 bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary"
+            className="shadow-2xl mt-3 font-bold h-max self-center rounded-2xl p-2 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
           >
             Paste from encrypted text
           </button>
@@ -330,13 +330,13 @@ function App() {
         <button
           type="button"
           onClick={aes.handleDecryptEncryptedText}
-          className="shadow-2xl font-bold h-max self-center rounded-2xl p-2 md:relative md:bottom-9 bg-pastel-foreground hover:bg-pastel-secondary active:bg-pastel-primary"
+          className="shadow-2xl font-bold h-max self-center rounded-2xl p-2 md:relative md:bottom-9 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
         >
           Decrypt
         </button>
         <div className="md:flex-1 h-64 flex flex-col gap-2">
           <div className="flex-1">
-            <h2 className="text-pastel-primary text-center font-bold text-2xl drop-shadow">
+            <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-2xl drop-shadow">
               Decrypted text
             </h2>
           </div>
@@ -344,7 +344,7 @@ function App() {
             <textarea
               disabled
               value={outputDecryptedText}
-              className="shadow-2xl text-black bg-pastel-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background filter drop-shadow"
+              className="shadow-2xl text-black dark:text-white bg-pastel-foreground dark:bg-dark-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background dark:scrollbar-thumb-dark-background filter drop-shadow"
             >
             </textarea>
           </form>
