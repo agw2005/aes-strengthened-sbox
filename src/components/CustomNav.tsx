@@ -2,7 +2,7 @@ const CustomNav = () => {
   return (
     <nav className="flex gap-16 justify-center">
       <a
-        className="text-pastel-yellow fill-none stroke-pastel-yellow hover:stroke-pastel-pink hover:text-pastel-pink flex flex-col items-center text-center h-max"
+        className="shadow-2xl text-pastel-yellow fill-none stroke-pastel-yellow hover:stroke-pastel-pink hover:text-pastel-pink flex flex-col items-center text-center h-max"
         href="https://link.springer.com/article/10.1007/s11071-024-10414-3"
         target="_blank"
       >
@@ -22,7 +22,7 @@ const CustomNav = () => {
         </p>
       </a>
       <a
-        className="text-pastel-yellow h-12 fill-pastel-yellow hover:fill-pastel-pink hover:text-pastel-pink flex flex-col items-center text-center"
+        className="shadow-2xl text-pastel-yellow h-12 fill-pastel-yellow hover:fill-pastel-pink hover:text-pastel-pink flex flex-col items-center text-center"
         href="https://github.com/agw2005/aes-strengthened-sbox"
         target="_blank"
       >
@@ -40,7 +40,7 @@ const CustomNav = () => {
         </p>
       </a>
       <a
-        className="text-pastel-yellow h-12 fill-pastel-yellow hover:fill-pastel-pink hover:text-pastel-pink flex flex-col items-center text-center"
+        className="shadow-2xl text-pastel-yellow h-12 fill-pastel-yellow hover:fill-pastel-pink hover:text-pastel-pink flex flex-col items-center text-center"
         href="https://ko-fi.com/agw"
         target="_blank"
       >
