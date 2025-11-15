@@ -20,6 +20,9 @@ import {
   type SBoxType,
   stringToBase64,
 } from "./math/aesHelper.ts";
+import arraysEqual from "./helper/arrayEqual.ts";
+
+const EMPTY_INPUT_KEY: string[] = Array(16).fill("");
 
 function App() {
   const [generatedAESKey, setGeneratedAESKey] = useState<Uint8Array>();
@@ -34,6 +37,9 @@ function App() {
   const [inputEncryptedText, setInputEncryptedText] = useState<string>("");
   const [outputDecryptedText, setOutputDecryptedText] = useState<string>("");
   const [keyNotGeneratedYetError, setKeyNotGeneratedYetError] = useState<
+    string
+  >("");
+  const [inputKeyNotDefinedYetError, setInputKeyNotDefinedYetError] = useState<
     string
   >("");
 
@@ -73,16 +79,17 @@ function App() {
     },
     handleDecryptEncryptedText: () => {
       try {
-        if (generatedAESKey === undefined) {
-          throw new Error(`Key has not been generated yet`);
+        if (arraysEqual(inputAESKeyInHexadecimal, EMPTY_INPUT_KEY)) {
+          throw new Error(`Input key has not been defined yet`);
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
-        setKeyNotGeneratedYetError(errorMessage);
+        setInputKeyNotDefinedYetError(errorMessage);
         console.error(err);
         return;
       }
-      setKeyNotGeneratedYetError("");
+      setInputKeyNotDefinedYetError("");
+
       const inputAESKeyInHexadecimalToString = hexBytesToStringHexBytes(
         inputAESKeyInHexadecimal,
       );
@@ -217,10 +224,9 @@ function App() {
         </div>
       </section>
       <section className="flex justify-center">
-        <div className="border-2 border-pastel-primary w-3/4 md:w-max p-2 bg-red-800 text-center shadow-2xl">
+        <div className="border-2 border-pastel-primary w-max p-2 bg-yellow-700 text-center shadow-2xl">
           <p className="text-white text-xs break-all">
-            Unfortunately, for now, the S-Box for K128 will not decrypt
-            properly.
+            Warning : K128 will not decrypt properly.
           </p>
         </div>
       </section>
@@ -312,6 +318,17 @@ function App() {
         </button>
       </section>
       <hr className="text-pastel-secondary dark:text-dark-secondary" />
+      {inputKeyNotDefinedYetError
+        ? (
+          <section className="self-center">
+            <div className="border-2 border-white w-max p-2 bg-red-800 shadow-2xl">
+              <p className="text-white text-xs">{inputKeyNotDefinedYetError}</p>
+            </div>
+          </section>
+        )
+        : (
+          ""
+        )}
       <section className="min-h-32 md:min-h-96 p-4 gap-8 flex md:flex-row flex-col ">
         <div className="md:flex-1 h-64 flex flex-col gap-2">
           <h2 className="text-pastel-primary dark:text-dark-primary text-center font-bold text-xl md:text-2xl filter drop-shadow">
