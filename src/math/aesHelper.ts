@@ -540,6 +540,12 @@ export const aesBlockEquality = (
   return true;
 };
 
+/**
+ * Combines an array of AES blocks into a single block.
+ *
+ * @param blocks An array of Uint8Array blocks.
+ * @returns `Uint8Array` All bytes from the blocks in order.
+ */
 export const flattenBlocks = (blocks: Uint8Array[]): Uint8Array => {
   const totalLength = blocks.length * BLOCK_SIZE_BYTES;
   const combined = new Uint8Array(totalLength);
@@ -549,6 +555,15 @@ export const flattenBlocks = (blocks: Uint8Array[]): Uint8Array => {
   return combined;
 };
 
+/**
+ * Splits a single block into an array of blocks.
+ *
+ * If the last block is smaller than 16 bytes, it will be padded with zeros
+ * to fit the 16-bytes block-size requirement.
+ *
+ * @param bytes The input Uint8Array that will be split into an rray of 16 bytes Uint8Array.
+ * @returns `Uint8Array[]` The separated blocks.
+ */
 export const splitIntoBlocks = (bytes: Uint8Array): Uint8Array[] => {
   const blocks: Uint8Array[] = [];
   const numberOfBlocks = Math.ceil(bytes.length / BLOCK_SIZE_BYTES);
@@ -568,6 +583,9 @@ export const splitIntoBlocks = (bytes: Uint8Array): Uint8Array[] => {
   return blocks;
 };
 
+/**
+ * The available S-Box types for AES operations.
+ */
 export const SBOX_TYPE = {
   Original: "Standard",
   K4: "K4",
@@ -576,8 +594,19 @@ export const SBOX_TYPE = {
   K111: "K111",
   K128: "K128",
 } as const;
+
+/**
+ * Type alias for the S-Box identifiers.
+ * Represents one of the possible S-Box types defined in `SBOX_TYPE`.
+ */
 export type SBoxType = (typeof SBOX_TYPE)[keyof typeof SBOX_TYPE];
 
+/**
+ * Converts a Base64 encoded string into an AES-ready block.
+ *
+ * @param base64 The Base64 string.
+ * @returns `Uint8Array` The resulting block.
+ */
 export const base64ToBytes = (base64: string): Uint8Array => {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
@@ -587,28 +616,16 @@ export const base64ToBytes = (base64: string): Uint8Array => {
   return bytes;
 };
 
+/**
+ * Converts a block into a Base64 encoded string.
+ *
+ * @param bytes The block to encode.
+ * @returns `string` The resulting Base64 string.
+ */
 export const bytesToBase64 = (bytes: Uint8Array): string => {
   let binary = "";
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
   return btoa(binary);
-};
-
-export const stringToBase64 = (text: string): string => {
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(text);
-  let binary = "";
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-};
-
-export const base64ToString = (base64: string): string => {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  const decoder = new TextDecoder();
-  return decoder.decode(bytes);
 };
