@@ -629,3 +629,33 @@ export const bytesToBase64 = (bytes: Uint8Array): string => {
   }
   return btoa(binary);
 };
+
+/**
+ * Converts a UTF-8 string into a Base64 encoded string.
+ *
+ * @param text The UTF-8 string to encode.
+ * @returns The corresponding Base64 string.
+ */
+export const stringToBase64 = (text: string): string => {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(text);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+/**
+ * Converts a Base64 encoded string into a UTF-8 string.
+ *
+ * @param base64 The Base64 string to decode.
+ * @returns `string` The resulting UTF-8 string.
+ */
+export const base64ToString = (base64: string): string => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const decoder = new TextDecoder();
+  return decoder.decode(bytes);
+};

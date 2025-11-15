@@ -14,7 +14,12 @@ import {
   keyToHexadecimal,
 } from "./helper/hex.ts";
 import { AES_KEY_SIZE_BYTES } from "./math/aesConstants.ts";
-import { SBOX_TYPE, type SBoxType } from "./math/aesHelper.ts";
+import {
+  base64ToString,
+  SBOX_TYPE,
+  type SBoxType,
+  stringToBase64,
+} from "./math/aesHelper.ts";
 
 function App() {
   const [generatedAESKey, setGeneratedAESKey] = useState<Uint8Array>();
@@ -83,8 +88,9 @@ function App() {
       );
       const inputAESKey = hexadecimalToKey(inputAESKeyInHexadecimalToString);
 
-      const encryptedTextString = inputEncryptedText;
-      const encryptedTextBlocks = stringToBlocks(encryptedTextString);
+      const encryptedTextBase64String = inputEncryptedText;
+      const encryptedTextStringUTF8 = base64ToString(encryptedTextBase64String);
+      const encryptedTextBlocks = stringToBlocks(encryptedTextStringUTF8);
       const decryptedTextBlocks = decryptBlock(
         encryptedTextBlocks,
         inputAESKey,
@@ -112,7 +118,7 @@ function App() {
     },
     handlePasteFromEncryptedText: () => {
       setInputEncryptedText("");
-      setInputEncryptedText(outputEncryptedText);
+      setInputEncryptedText(stringToBase64(outputEncryptedText));
     },
     handlePasteAESKeyFromClipboard: async () => {
       try {
@@ -260,7 +266,7 @@ function App() {
           <form action="" className="flex-99">
             <textarea
               disabled
-              value={outputEncryptedText}
+              value={stringToBase64(outputEncryptedText)}
               className="shadow-2xl text-black dark:text-white bg-pastel-foreground dark:bg-dark-foreground rounded-2xl font-semibold overflow-y-scroll p-2 text-xs resize-none outline-0 w-full h-full scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-pastel-background dark:scrollbar-thumb-dark-background filter drop-shadow"
             >
             </textarea>
