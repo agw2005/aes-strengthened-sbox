@@ -127,6 +127,9 @@ function App() {
       setInputEncryptedText("");
       setInputEncryptedText(stringToBase64(outputEncryptedText));
     },
+    handleCopyEncryptedText: () => {
+      navigator.clipboard.writeText(stringToBase64(outputEncryptedText));
+    },
     handlePasteAESKeyFromClipboard: async () => {
       try {
         const text = await navigator.clipboard.readText();
@@ -277,6 +280,13 @@ function App() {
             >
             </textarea>
           </form>
+          <button
+            type="button"
+            onClick={helper.handleCopyEncryptedText}
+            className="shadow-2xl h-max font-bold self-center rounded-2xl p-2 bg-pastel-foreground dark:bg-dark-foreground hover:bg-pastel-secondary dark:hover:bg-dark-secondary dark:text-white active:bg-pastel-primary dark:active:bg-dark-primary"
+          >
+            Copy
+          </button>
         </div>
       </section>
       <hr className="text-pastel-secondary dark:text-dark-secondary" />
