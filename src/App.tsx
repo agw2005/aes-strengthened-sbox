@@ -42,6 +42,12 @@ function App() {
   const [inputKeyNotDefinedYetError, setInputKeyNotDefinedYetError] = useState<
     string
   >("");
+  const [
+    inputEncryptedTextInvalidContainsCharacterError,
+    setInputEncryptedTextInvalidContainsCharacterError,
+  ] = useState<
+    string
+  >("");
 
   const [inputSelectedSBoxType, setInputSelectedSBoxType] = useState<SBoxType>(
     SBOX_TYPE.Original,
@@ -96,6 +102,19 @@ function App() {
       const inputAESKey = hexadecimalToKey(inputAESKeyInHexadecimalToString);
 
       const encryptedTextBase64String = inputEncryptedText;
+      try {
+        const encryptedTextStringUTF8 = base64ToString(
+          encryptedTextBase64String,
+        );
+        stringToBlocks(encryptedTextStringUTF8);
+      } catch (err) {
+        const errorMessage =
+          "Encrypted text contains invalid encrypted characters";
+        setInputEncryptedTextInvalidContainsCharacterError(errorMessage);
+        console.error(err);
+        return;
+      }
+      setInputEncryptedTextInvalidContainsCharacterError("");
       const encryptedTextStringUTF8 = base64ToString(encryptedTextBase64String);
       const encryptedTextBlocks = stringToBlocks(encryptedTextStringUTF8);
       const decryptedTextBlocks = decryptBlock(
@@ -333,6 +352,20 @@ function App() {
           <section className="self-center">
             <div className="border-2 border-white w-max p-2 bg-red-800 shadow-2xl">
               <p className="text-white text-xs">{inputKeyNotDefinedYetError}</p>
+            </div>
+          </section>
+        )
+        : (
+          ""
+        )}
+
+      {inputEncryptedTextInvalidContainsCharacterError
+        ? (
+          <section className="self-center">
+            <div className="border-2 border-white w-max p-2 bg-red-800 shadow-2xl">
+              <p className="text-white text-xs">
+                {inputEncryptedTextInvalidContainsCharacterError}
+              </p>
             </div>
           </section>
         )
