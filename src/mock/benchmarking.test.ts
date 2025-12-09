@@ -8,12 +8,14 @@ import {
   S_BOX_44,
   S_BOX_81,
 } from "../math/aesConstants";
-import { SBOX_TYPE } from "../math/aesHelper";
+import { SBOX_TYPE, type SBoxType } from "../math/aesHelper";
 
-const ERROR = 0.05;
+const SAC_TIMEOUT_MILLISECONDS = 7500;
+const NL_ERROR = 0.0005;
+const SAC_ERROR = 0.05;
 
 interface NotInPaperExpectedResult {
-  name: string;
+  name: SBoxType;
   sbox: number[];
   DU: number;
   AD: number;
@@ -22,7 +24,7 @@ interface NotInPaperExpectedResult {
 }
 
 interface InPaperExpectedResult {
-  name: string;
+  name: SBoxType;
   sbox: number[];
   NL: number;
   SAC: number;
@@ -106,128 +108,134 @@ const expectedInPaperResults: InPaperExpectedResult[] = [
 
 describe("Non-linearity (NL)", () => {
   expectedInPaperResults.forEach((expectedResult) => {
-    const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-    const expectedNL = expectedResult.NL;
-    const error = ((resultNL - expectedNL) / expectedNL) * 100;
-    test(`${expectedResult.name} NL : ${resultNL} (Err : ${error})`, () => {
-      assert(error <= ERROR);
+    test(`${expectedResult.name} NL`, () => {
+      const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+      const expectedNL = expectedResult.NL;
+      const error = Math.abs((resultNL - expectedNL) / expectedNL);
+      console.log(`${resultNL} / ${expectedNL} / ${error}`);
+      assert(error <= NL_ERROR);
     });
   });
 });
 
 describe("Strict Avalanche Criterion (SAC)", () => {
   expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} SAC`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
+    test(
+      `${expectedResult.name} SAC`,
+      { timeout: SAC_TIMEOUT_MILLISECONDS },
+      () => {
+        const resultSAC = benchmark.strictAvalancheCriterion(
+          expectedResult.name
+        );
+        const expectedSAC = expectedResult.SAC;
+        const error = Math.abs((resultSAC - expectedSAC) / expectedSAC);
+        console.log(`${resultSAC} / ${expectedSAC} / ${error}`);
+        assert(error <= SAC_ERROR);
+      }
+    );
   });
 });
 
-describe("Bit Independence Criterion Non-linearity (BIC-NL)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} BIC-NL`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Bit Independence Criterion Non-linearity (BIC-NL)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} BIC-NL`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Bit Independence Criterion Strict Avalanche Criterion (BIC-SAC)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} BIC-SAC`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Bit Independence Criterion Strict Avalanche Criterion (BIC-SAC)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} BIC-SAC`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Linear Approximation Probability (LAP)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} LAP`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Linear Approximation Probability (LAP)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} LAP`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Differential Approximation Probability (DAP)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} DAP`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Differential Approximation Probability (DAP)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} DAP`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Differential Uniformity (DU)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} DU`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Differential Uniformity (DU)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} DU`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Algebraic Degree (AD)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} AD`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Algebraic Degree (AD)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} AD`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Transparency Order (TO)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} TO`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Transparency Order (TO)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} TO`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
 
-describe("Correlation Immunity (CI)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} CI`, () => {
-      //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      //   const expectedNL = expectedResult.NL;
-      //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-      //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-      //   console.log(`Error : ${error}`);
-      //   assert(error <= ERROR);
-    });
-  });
-});
+// describe("Correlation Immunity (CI)", () => {
+//   expectedInPaperResults.forEach((expectedResult) => {
+//     test(`${expectedResult.name} CI`, () => {
+//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
+//       //   const expectedNL = expectedResult.NL;
+//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
+//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
+//       //   console.log(`Error : ${error}`);
+//       //   assert(error <= ERROR);
+//     });
+//   });
+// });
