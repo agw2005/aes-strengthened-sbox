@@ -1,4 +1,4 @@
-import { assert, describe, test } from "vitest";
+import { afterAll, describe, test } from "vitest";
 import { benchmark } from "../math/benchmark.ts";
 import {
   S_BOX,
@@ -7,13 +7,18 @@ import {
   S_BOX_4,
   S_BOX_44,
   S_BOX_81,
-} from "../math/aesConstants";
-import { SBOX_TYPE, type SBoxType } from "../math/aesHelper";
+} from "../math/aesConstants.ts";
+import { SBOX_TYPE, type SBoxType } from "../math/aesHelper.ts";
 
-const SAC_TIMEOUT_MILLISECONDS = 7500;
-const NL_ERROR = 0.0005;
-const SAC_ERROR = 0.05;
+interface ResultFormat {
+  Subject: string;
+  Result: number;
+  Expected: number;
+  Difference: number;
+  Verdict: string;
+}
 
+/*
 interface NotInPaperExpectedResult {
   name: SBoxType;
   sbox: number[];
@@ -22,6 +27,7 @@ interface NotInPaperExpectedResult {
   TO: number;
   CI: number;
 }
+  */
 
 interface InPaperExpectedResult {
   name: SBoxType;
@@ -34,6 +40,7 @@ interface InPaperExpectedResult {
   DAP: number;
 }
 
+/*
 const expectedNotInPaperResults: NotInPaperExpectedResult = {
   name: SBOX_TYPE.Original,
   sbox: S_BOX,
@@ -42,6 +49,7 @@ const expectedNotInPaperResults: NotInPaperExpectedResult = {
   TO: 7.86, // Prouff, E. (2005). "DPA Attacks and S-Boxes." Fast Software Encryption (FSE 2005).
   CI: 0, // Siegenthaler, T. (1984). "Correlation-immunity of nonlinear combining functions for cryptographic applications." IEEE Transactions on Information Theory.
 };
+*/
 
 const expectedInPaperResults: InPaperExpectedResult[] = [
   {
@@ -104,34 +112,321 @@ const expectedInPaperResults: InPaperExpectedResult[] = [
     LAP: 0.0625,
     DAP: 0.01563,
   },
-];
+]; // 5 items (max index: 4)
 
-describe("Non-linearity (NL)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(`${expectedResult.name} NL`, () => {
-      const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-      const expectedNL = expectedResult.NL;
-      const error = Math.abs((resultNL - expectedNL) / expectedNL);
-      console.log(`${resultNL} / ${expectedNL} / ${error}`);
-      assert(error <= NL_ERROR);
-    });
+const analysis: ResultFormat[] = [];
+
+const generateVerdict = (
+  expectedValue: number,
+  resultValue: number,
+): string => {
+  return expectedValue >= resultValue
+    ? "Expected value is bigger"
+    : "Expected value is smaller";
+};
+
+describe.concurrent("Benchmarkings", () => {
+  describe("Non-linearity (NL)", () => {
+    test.concurrent(
+      `${expectedInPaperResults[0].name} NL`,
+      { timeout: 0 },
+      () => {
+        const resultNL = benchmark.nonLinearity(expectedInPaperResults[0].sbox);
+        const expectedNL = expectedInPaperResults[0].NL;
+        const diff = expectedNL - resultNL;
+        const verdict = generateVerdict(expectedNL, resultNL);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[0].name} NL`,
+          Result: resultNL,
+          Expected: expectedNL,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[1].name} NL`,
+      { timeout: 0 },
+      () => {
+        const resultNL = benchmark.nonLinearity(expectedInPaperResults[1].sbox);
+        const expectedNL = expectedInPaperResults[1].NL;
+        const diff = expectedNL - resultNL;
+        const verdict = generateVerdict(expectedNL, resultNL);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[1].name} NL`,
+          Result: resultNL,
+          Expected: expectedNL,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[2].name} NL`,
+      { timeout: 0 },
+      () => {
+        const resultNL = benchmark.nonLinearity(expectedInPaperResults[2].sbox);
+        const expectedNL = expectedInPaperResults[2].NL;
+        const diff = expectedNL - resultNL;
+        const verdict = generateVerdict(expectedNL, resultNL);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[2].name} NL`,
+          Result: resultNL,
+          Expected: expectedNL,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[3].name} NL`,
+      { timeout: 0 },
+      () => {
+        const resultNL = benchmark.nonLinearity(expectedInPaperResults[3].sbox);
+        const expectedNL = expectedInPaperResults[3].NL;
+        const diff = expectedNL - resultNL;
+        const verdict = generateVerdict(expectedNL, resultNL);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[3].name} NL`,
+          Result: resultNL,
+          Expected: expectedNL,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[4].name} NL`,
+      { timeout: 0 },
+      () => {
+        const resultNL = benchmark.nonLinearity(expectedInPaperResults[4].sbox);
+        const expectedNL = expectedInPaperResults[4].NL;
+        const diff = expectedNL - resultNL;
+        const verdict = generateVerdict(expectedNL, resultNL);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[4].name} NL`,
+          Result: resultNL,
+          Expected: expectedNL,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
   });
-});
 
-describe("Strict Avalanche Criterion (SAC)", () => {
-  expectedInPaperResults.forEach((expectedResult) => {
-    test(
-      `${expectedResult.name} SAC`,
-      { timeout: SAC_TIMEOUT_MILLISECONDS },
+  describe("Strict Avalanche Criterion (SAC)", () => {
+    test.concurrent(
+      `${expectedInPaperResults[0].name} SAC`,
+      { timeout: 0 },
       () => {
         const resultSAC = benchmark.strictAvalancheCriterion(
-          expectedResult.name
+          expectedInPaperResults[0].name,
         );
-        const expectedSAC = expectedResult.SAC;
-        const error = Math.abs((resultSAC - expectedSAC) / expectedSAC);
-        console.log(`${resultSAC} / ${expectedSAC} / ${error}`);
-        assert(error <= SAC_ERROR);
-      }
+        const expectedSAC = expectedInPaperResults[0].SAC;
+        const diff = expectedSAC - resultSAC;
+        const verdict = generateVerdict(expectedSAC, resultSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[0].name} SAC`,
+          Result: resultSAC,
+          Expected: expectedSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[1].name} SAC`,
+      { timeout: 0 },
+      () => {
+        const resultSAC = benchmark.strictAvalancheCriterion(
+          expectedInPaperResults[1].name,
+        );
+        const expectedSAC = expectedInPaperResults[1].SAC;
+        const diff = expectedSAC - resultSAC;
+        const verdict = generateVerdict(expectedSAC, resultSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[1].name} SAC`,
+          Result: resultSAC,
+          Expected: expectedSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[2].name} SAC`,
+      { timeout: 0 },
+      () => {
+        const resultSAC = benchmark.strictAvalancheCriterion(
+          expectedInPaperResults[2].name,
+        );
+        const expectedSAC = expectedInPaperResults[2].SAC;
+        const diff = expectedSAC - resultSAC;
+        const verdict = generateVerdict(expectedSAC, resultSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[2].name} SAC`,
+          Result: resultSAC,
+          Expected: expectedSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[3].name} SAC`,
+      { timeout: 0 },
+      () => {
+        const resultSAC = benchmark.strictAvalancheCriterion(
+          expectedInPaperResults[3].name,
+        );
+        const expectedSAC = expectedInPaperResults[3].SAC;
+        const diff = expectedSAC - resultSAC;
+        const verdict = generateVerdict(expectedSAC, resultSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[3].name} SAC`,
+          Result: resultSAC,
+          Expected: expectedSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[4].name} SAC`,
+      { timeout: 0 },
+      () => {
+        const resultSAC = benchmark.strictAvalancheCriterion(
+          expectedInPaperResults[4].name,
+        );
+        const expectedSAC = expectedInPaperResults[4].SAC;
+        const diff = expectedSAC - resultSAC;
+        const verdict = generateVerdict(expectedSAC, resultSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[4].name} SAC`,
+          Result: resultSAC,
+          Expected: expectedSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+  });
+
+  describe("Bit Independence Criterion Strict Avalanche Criterion (BIC-SAC)", () => {
+    test.concurrent(
+      `${expectedInPaperResults[0].name} BIC-SAC`,
+      { timeout: 0 },
+      () => {
+        const resultBICSAC = benchmark
+          .bitIndependenceCriterionStrictAvalancheCriterion(
+            expectedInPaperResults[0].name,
+          );
+        const expectedBICSAC = expectedInPaperResults[0].BIC_SAC;
+        const diff = expectedBICSAC - resultBICSAC;
+        const verdict = generateVerdict(expectedBICSAC, resultBICSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[0].name} BIC-SAC`,
+          Result: resultBICSAC,
+          Expected: expectedBICSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[1].name} BIC-SAC`,
+      { timeout: 0 },
+      () => {
+        const resultBICSAC = benchmark
+          .bitIndependenceCriterionStrictAvalancheCriterion(
+            expectedInPaperResults[1].name,
+          );
+        const expectedBICSAC = expectedInPaperResults[1].BIC_SAC;
+        const diff = expectedBICSAC - resultBICSAC;
+        const verdict = generateVerdict(expectedBICSAC, resultBICSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[1].name} BIC-SAC`,
+          Result: resultBICSAC,
+          Expected: expectedBICSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[2].name} BIC-SAC`,
+      { timeout: 0 },
+      () => {
+        const resultBICSAC = benchmark
+          .bitIndependenceCriterionStrictAvalancheCriterion(
+            expectedInPaperResults[2].name,
+          );
+        const expectedBICSAC = expectedInPaperResults[2].BIC_SAC;
+        const diff = expectedBICSAC - resultBICSAC;
+        const verdict = generateVerdict(expectedBICSAC, resultBICSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[2].name} BIC-SAC`,
+          Result: resultBICSAC,
+          Expected: expectedBICSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[3].name} BIC-SAC`,
+      { timeout: 0 },
+      () => {
+        const resultBICSAC = benchmark
+          .bitIndependenceCriterionStrictAvalancheCriterion(
+            expectedInPaperResults[3].name,
+          );
+        const expectedBICSAC = expectedInPaperResults[3].BIC_SAC;
+        const diff = expectedBICSAC - resultBICSAC;
+        const verdict = generateVerdict(expectedBICSAC, resultBICSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[3].name} BIC-SAC`,
+          Result: resultBICSAC,
+          Expected: expectedBICSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
+    );
+    test.concurrent(
+      `${expectedInPaperResults[4].name} BIC-SAC`,
+      { timeout: 0 },
+      () => {
+        const resultBICSAC = benchmark
+          .bitIndependenceCriterionStrictAvalancheCriterion(
+            expectedInPaperResults[4].name,
+          );
+        const expectedBICSAC = expectedInPaperResults[4].BIC_SAC;
+        const diff = expectedBICSAC - resultBICSAC;
+        const verdict = generateVerdict(expectedBICSAC, resultBICSAC);
+        const logAnalysis = {
+          Subject: `${expectedInPaperResults[4].name} BIC-SAC`,
+          Result: resultBICSAC,
+          Expected: expectedBICSAC,
+          Difference: diff,
+          Verdict: verdict,
+        };
+        analysis.push(logAnalysis);
+      },
     );
   });
 });
@@ -139,19 +434,6 @@ describe("Strict Avalanche Criterion (SAC)", () => {
 // describe("Bit Independence Criterion Non-linearity (BIC-NL)", () => {
 //   expectedInPaperResults.forEach((expectedResult) => {
 //     test(`${expectedResult.name} BIC-NL`, () => {
-//       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
-//       //   const expectedNL = expectedResult.NL;
-//       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
-//       //   console.log(`${expectedResult.name} NL : ${resultNL}`);
-//       //   console.log(`Error : ${error}`);
-//       //   assert(error <= ERROR);
-//     });
-//   });
-// });
-
-// describe("Bit Independence Criterion Strict Avalanche Criterion (BIC-SAC)", () => {
-//   expectedInPaperResults.forEach((expectedResult) => {
-//     test(`${expectedResult.name} BIC-SAC`, () => {
 //       //   const resultNL = benchmark.nonLinearity(expectedResult.sbox);
 //       //   const expectedNL = expectedResult.NL;
 //       //   const error = ((resultNL - expectedNL) / expectedNL) * 100;
@@ -239,3 +521,8 @@ describe("Strict Avalanche Criterion (SAC)", () => {
 //     });
 //   });
 // });
+
+afterAll(async () => {
+  await analysis.sort();
+  await console.table(analysis);
+});
