@@ -51,7 +51,7 @@ const CustomNav = () => {
       </a>
       <a
         className=" text-pastel-foreground dark:text-dark-foreground h-12 fill-pastel-foreground dark:fill-dark-foreground hover:fill-pastel-secondary dark:hover:fill-dark-secondary hover:text-pastel-secondary dark:hover:text-dark-secondary flex flex-col items-center text-center"
-        href="https://ko-fi.com/agw"
+        href="#"
         target="_blank"
       >
         <svg
